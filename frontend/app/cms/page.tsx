@@ -1,8 +1,11 @@
-import React from 'react'
+
+import Cms from '@/components/Cms/Cms'
 
 function page() {
   return (
-    <div>cms</div>
+    <> 
+      <Cms/>
+    </>
   )
 }
 
