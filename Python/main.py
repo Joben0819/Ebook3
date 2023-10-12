@@ -6,10 +6,19 @@ from pydantic import BaseModel
 from pathlib import Path
 import os
 import json
-app = FastAPI()
+from fastapi.middleware.cors import CORSMiddleware
 
+app = FastAPI()
 client = MongoClient("mongodb+srv://Joben:Anne060123@joben.a1aoz0g.mongodb.net/?retryWrites=true&w=majority")
 db = client["Users"] 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Replace with the actual origin of your frontend application
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def read_root():
@@ -110,12 +119,18 @@ async def create_text_file(text_data: TextFileInput):
 
     new_directory = Path(directory_path)
     new_directory.mkdir(parents=True, exist_ok=True)
-
+    collection = db.get_collection("Ebooks")
     file_path = new_directory / file_name
+    existing_user = collection.find_one({"title": Book_store})
+    if existing_user is None:
+        raise JSONResponse(status_code=404, detail="User not found")
 
     try:
         with open(file_path, "w") as file:
             file.write(text_content)
+            collection.update_one(
+            {"$push": {"chapter": file_name}}
+    )
 
         return {"message": f"File '{file_name}' created and content written successfully."}
     except Exception as e:
