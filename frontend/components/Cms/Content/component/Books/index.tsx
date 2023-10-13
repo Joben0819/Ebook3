@@ -1,3 +1,4 @@
+'use client'
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
@@ -10,7 +11,7 @@ function index() {
   }, []);
   return (
     <div className="w-full bg-white" style={{ padding: "1rem 1rem 0rem" }}>
-      {data.map((index) => {
+      {data.map((index: any) => {
         console.log(index.base64img);
         return (
           <>

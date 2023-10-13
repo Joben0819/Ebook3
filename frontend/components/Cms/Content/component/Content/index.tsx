@@ -12,15 +12,16 @@ function index() {
   useEffect(() => {
     axios
       .post("http://127.0.0.1:8000/read_file/", {
-        num: 1,
-        Book: "Dracula",
+        // num: 1,
+        // Book: "Dracula",
       })
       .then((res) => {
         // setdata(res.data)
-        console.log(res);
-      });
-  }, []);
-  return (
+        // console.log(res)
+      }
+    )
+  },[])
+  return(
     <>
       <div className="w-full bg-cyan-700">
         <div className="flex justify-center">
