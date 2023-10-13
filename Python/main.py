@@ -14,7 +14,7 @@ db = client["Users"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Replace with the actual origin of your frontend application
+    allow_origins=["http://localhost:3002"],  # Replace with the actual origin of your frontend application
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
