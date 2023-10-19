@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
@@ -9,8 +9,13 @@ function index() {
       setdata(res.data);
     });
   }, []);
+
   return (
     <div className="w-full bg-white" style={{ padding: "1rem 1rem 0rem" }}>
+      <div>
+        <input type="text" placeholder="Title" />
+        <input type="file" placeholder="image" />
+      </div>
       {data.map((index: any) => {
         console.log(index.base64img);
         return (

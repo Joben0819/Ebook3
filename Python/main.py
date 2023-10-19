@@ -32,6 +32,7 @@ class ItemCreate(BaseModel):
     name: str
     password: str
 class FolderInput(BaseModel):
+    id: int
     title: str
     base64img: str
 class TextFileInput(BaseModel):
@@ -41,6 +42,13 @@ class TextFileInput(BaseModel):
 class Contents(BaseModel):
     num: int
     Book: str
+    
+class Process(BaseModel):
+    id: int
+    book: str
+class Addbook(BaseModel):
+    id: int
+    book: str
     
 @app.post("/register/")
 async def create_item(data: ItemCreate):
@@ -86,6 +94,15 @@ async def create_item(data: ItemCreate):
 @app.get("/get_data/")
 async def get_data():
     collection = db["Ebooks"]
+    data = list(collection.find({}))
+    for item in data:
+        item["_id"] = str(item["_id"])  
+    return data
+
+
+@app.get("/get_user_data/")
+async def get_data():
+    collection = db["Users"]
     data = list(collection.find({}))
     for item in data:
         item["_id"] = str(item["_id"])  
@@ -154,107 +171,74 @@ def read_root(data: Contents):
 
     return {"message": file_content}
 
-
-class Process(BaseModel):
-    user_id: str
-    book: str
-
-@app.post("/add_to_read/")
-async def read_root(data: Process):
-    # Find the user document by user_id
-    collection = db.get_collection("Ebooks")
-    existing_user = collection.find_one({"title": data.book})
+@app.post("/add_book/")
+async def read_root(data: Addbook):
+    collection = db.get_collection("Users")
+    existing_user = collection.find_one({"id": data.id})
     if existing_user is None:
         raise JSONResponse(status_code=404, detail="User not found")
-
-    # Add the book to the "read" list
+    
+    
     collection.update_one(
-        {"title": data.book},
-        {"$push": {"read": {"book": data.book}}}
+        {"id": data.id},
+        {"$push": {"Books": {"book": data.book, "onread": False, "Done": False }}}
     )
 
-    return {"message": f"Book '{data.book}' added to 'read' list successfully"}
+    return {"message": f"Book '{data.book}' added to 'read' list successfully {data.id}"}
 
-# @app.get("/user_lists/")
-# async def get_user_lists(data: Process):
-#     collection = db.get_collection("Ebooks")
-#     existing_user = collection.find_one({"title": data.book})
-#     # if existing_user is None:
-#     #     raise JSONResponse(status_code=404, detail="User not found")
+@app.post("/remove_book/")
+async def read_root(data: Addbook):
+    collection = db.get_collection("Users")
+    existing_user = collection.find_one({"id": data.id})
+    if existing_user is None:
+        raise JSONResponse(status_code=404, detail="User not found")
+    
+    collection.update_one(
+        {"id": data.id},
+        {"$pull": {"Books": {"book": data.book}}}
+    )
 
-#     return existing_user
+    return {"message": f"Book '{data.book}' added to 'read' list successfully {data.id}"}
 
-# users_progress = []
-
-# @app.post("/mark_as_done/")
-# async def mark_as_done(data: Process):
-#     user_id = data.user_id
-#     book = data.book
-
-#     # Check if the user already exists in the list
-#     user_exists = False
-#     for user in users_progress:
-#         if user["user_id"] == user_id:
-#             user_exists = True
-#             if book not in user["Done"]:
-#                 user["Done"].append(book)
-#             break
-
-#     # If the user does not exist, create a new entry
-#     if not user_exists:
-#         new_user = {
-#             "user_id": user_id,
-#             "Done": [book],
-#         }
-#         users_progress.append(new_user)
-
-#     return {"message": f"Book '{book}' marked as done successfully for user {user_id}"}
 @app.post("/mark_as_done/")
 async def read_root(data: Process):
-    user_id = data.user_id
+    id = data.id
     book = data.book
-    collection = db.get_collection("Ebooks")
+    collection = db.get_collection("Users")
 
     # Check if the user already exists in the collection
-    existing_user = collection.find_one({"title": book})
+    existing_user = collection.find_one({"id": id})
     if existing_user is None:
         raise JSONResponse(status_code=404, detail="User not found")
 
     # Add the book to the "read" list
     collection.update_one(
-        {"title": book},
-        {"$push": {"Done": {"book": book}}}
-    )
-    collection.update_one(
-        {"title": book},
-        {"$pull": {"onread": {"book": book}}}
+        {"id": data.id, "Books.book": book},
+         {"$set": {"Books.$.Done": True}}
     )
 
-    return {"message": f"Book '{book}' marked as done successfully for user {user_id}"}
+
+    return {"message": f"Book '{book}' marked as done successfully for user {id}"}
 
 
 @app.post("/mark_as_onread/")
 async def read_root(data: Process):
-    user_id = data.user_id
+    id = data.id
     book = data.book
-    collection = db.get_collection("Ebooks")
+    collection = db.get_collection("Users")
 
     # Check if the user already exists in the collection
-    existing_user = collection.find_one({"title": book})
+    existing_user = collection.find_one({"id": id})
     if existing_user is None:
         raise JSONResponse(status_code=404, detail="User not found")
 
     # Add the book to the "read" list
     collection.update_one(
-        {"title": book},
-        {"$push": {"onread": {"book": book}}}
-    )
-    collection.update_one(
-        {"title": book},
-        {"$pull": {"read": {"book": book}}}
+        {"id": data.id, "Books.book": book},
+         {"$set": {"Books.$.onread": True}}
     )
 
-    return {"message": f"Book '{book}' marked as done successfully for user {user_id}"}
+    return {"message": f"Book '{book}' marked as done successfully for user {id}"}
 
 
 if __name__ == "__main__":
