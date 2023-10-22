@@ -14,7 +14,7 @@ db = client["Users"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3002"],  # Replace with the actual origin of your frontend application
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -35,12 +35,13 @@ class FolderInput(BaseModel):
     id: int
     title: str
     base64img: str
+    status: bool
 class TextFileInput(BaseModel):
     file_name: str  
     text_content: str  
     Book: str  
 class Contents(BaseModel):
-    num: int
+    num: str
     Book: str
     
 class Process(BaseModel):
@@ -141,16 +142,17 @@ async def create_text_file(text_data: TextFileInput):
     file_path = new_directory / file_name
     existing_user = collection.find_one({"title": Book_store})
     if existing_user is None:
-        raise JSONResponse(status_code=404, detail="User not found")
-
+        return { "status": False, "Message": "Wrong Data"}
+    
     try:
         with open(file_path, "w") as file:
             file.write(text_content)
             collection.update_one(
+            {"title": Book_store},
             {"$push": {"chapter": file_name}}
     )
 
-        return {"message": f"File '{file_name}' created and content written successfully."}
+        return {"status": True}
     except Exception as e:
         return {"error": f"An error occurred: {str(e)}"}
     # return directory_path
@@ -174,7 +176,9 @@ def read_root(data: Contents):
 @app.post("/add_book/")
 async def read_root(data: Addbook):
     collection = db.get_collection("Users")
+    collection2 = db.get_collection("Ebooks")
     existing_user = collection.find_one({"id": data.id})
+    favorite = collection2.find_one({"title": data.book})
     if existing_user is None:
         raise JSONResponse(status_code=404, detail="User not found")
     
@@ -183,19 +187,28 @@ async def read_root(data: Addbook):
         {"id": data.id},
         {"$push": {"Books": {"book": data.book, "onread": False, "Done": False }}}
     )
-
+    collection2.update_one(
+        {"title": data.book},
+        {"$set": {"status": True}}
+    )
     return {"message": f"Book '{data.book}' added to 'read' list successfully {data.id}"}
 
 @app.post("/remove_book/")
 async def read_root(data: Addbook):
     collection = db.get_collection("Users")
+    collection2 = db.get_collection("Ebooks")
     existing_user = collection.find_one({"id": data.id})
+    # favorite = collection2.find_one({"title": data.book})
     if existing_user is None:
         raise JSONResponse(status_code=404, detail="User not found")
     
     collection.update_one(
         {"id": data.id},
         {"$pull": {"Books": {"book": data.book}}}
+    )
+    collection2.update_one(
+        {"title": data.book},
+        {"$set": {"status": False}}
     )
 
     return {"message": f"Book '{data.book}' added to 'read' list successfully {data.id}"}

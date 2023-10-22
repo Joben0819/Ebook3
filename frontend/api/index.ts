@@ -1,9 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 export const Domain = "http://127.0.0.1:8000";
-export const gameapp = "game99-game-app/";
-export const platform = "game99-platform-app/";
-export const payapp = "game99-pay-app/";
-export const lotteryapp = "game99-lottery-app/";
 
 var Post = "POST";
 var Get = "GET";
@@ -15,25 +11,27 @@ const axiosInstance = axios.create({
 
 export const api = async (
   param: string,
-  params2: string,
   method: string,
   data?: any
 ): Promise<any> => {
-  const url = Domain + param + params2;
-  let Content = "";
-  let json = true;
-  if (data instanceof FormData) {
-    Content = "multipart/form-data";
-    json = false;
-  } else {
-    Content = "application/json;charset=UTF-8";
-    json = true;
-  }
+  const url = Domain + param;
+  var globalHeaders = {
+    "front-host": url,
+    dev: 2,
+    version: 2,
+    "Content-Type": "application/json;charset=UTF-8",
+  };
   try {
     const axiosConfig: AxiosRequestConfig = {
       method: method,
       url: url,
-      data: json === true ? JSON.stringify(data) : data,
+      headers: {
+        "front-host": globalHeaders["front-host"],
+        dev: globalHeaders.dev.toString(),
+        version: globalHeaders.version.toString(),
+        "Content-Type": globalHeaders["Content-Type"],
+      },
+      data: JSON.stringify(data),
       // withCredentials: true,
     };
 
@@ -43,31 +41,32 @@ export const api = async (
       throw new Error("Request failed");
     }
 
-    if (
-      params2 === "login" ||
-      params2 === "register" ||
-      params2 === "continueWithOtp"
-    ) {
-      if (response.data.code === 200) {
-      } else {
-        return response;
-      }
-      return response;
-    } else if (response.data.code === 401) {
-      sessionStorage.removeItem("token");
-      return response;
-    } else {
-      return response;
-    }
+    return response;
   } catch (error) {
     return null;
   }
 };
 
 export function Register(data: any) {
-  return api(platform, "register", Post, data);
+  return api("/register", Post, data);
 }
 
 export function login(data: any) {
-  return api(platform, "login", Post, data);
+  return api("/login", Post, data);
+}
+
+export function Books(data: any) {
+  return api("/get_data/", Get, data);
+}
+
+export function Createfolder(data: any) {
+  return api("/create_folder", Post, data);
+}
+
+export function ReadFile(data: any) {
+  return api("/read_file", Post, data);
+}
+
+export function CreateFile(data: any) {
+  return api("/create_text_file", Post, data);
 }
