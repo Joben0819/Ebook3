@@ -2,6 +2,16 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import axios from "axios";
 import { CreateFile, ReadFile, Books } from "@/api";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+// import { Button } from "@/components/ui/";
 
 function index() {
   const [data, setdata] = useState("");
@@ -9,7 +19,8 @@ function index() {
   const [book, setbook] = useState<any>([]);
   const [title, settitle] = useState("");
   const [chapt, setchapt] = useState<string>("0");
-
+  const [title2, settitle2] = useState<string>("");
+  const [position, setPosition] = React.useState("0");
   function Added() {
     const books = document.getElementById("books") as HTMLInputElement | null;
     const textfile = document.getElementById(
@@ -49,7 +60,6 @@ function index() {
     });
   }, [chapt, title]);
   const filteredData = book.filter((item: any) => item.title === title);
-  console.log(title, chapt);
   return (
     <>
       <div className="w-full bg-cyan-700">
@@ -61,22 +71,36 @@ function index() {
               settitle(e.target.value);
             }}
           />
-          {/* <input type="dropdown" placeholder="Chapter" /> */}
-          {filteredData.map((item: any, index: string) => {
-            // console.log(item.chapter);
-            return (
-              <div key={index} className="flex w-1/4 justify-between">
-                {item?.chapter?.map((data: any, idx: any) => {
+          <DropdownMenu>
+            <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuLabel>Panel Position</DropdownMenuLabel>
+              <DropdownMenuRadioGroup
+                value={position}
+                onValueChange={setPosition}
+              >
+                {filteredData.map((item: any, index: string) => {
                   return (
-                    <div key={idx} onClick={() => setchapt(data)}>
-                      {data}
-                    </div>
+                    <>
+                      {item?.chapter?.map((data: any, idx: any) => {
+                        return (
+                          <DropdownMenuRadioItem
+                            value={idx}
+                            key={idx}
+                            onClick={() => {
+                              setchapt(data), settitle2(data);
+                            }}
+                          >
+                            {data}
+                          </DropdownMenuRadioItem>
+                        );
+                      })}
+                    </>
                   );
                 })}
-              </div>
-            );
-          })}
-
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <button
             onClick={() => {
               setmodal(true);
@@ -84,9 +108,11 @@ function index() {
           >
             + Add
           </button>
-          <button>chapter</button>
         </div>
-        <div className="flex h-5/6">{data}</div>
+        <div className="flex h-5/6 flex-col items-center overflow-y-auto p-5 leading-loose">
+          <h1 className="text-xl font-bold"> {title2}</h1>
+          {data}
+        </div>
       </div>
       {modal === true ? (
         <div

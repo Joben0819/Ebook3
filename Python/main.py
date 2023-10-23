@@ -5,8 +5,8 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from pathlib import Path
 import os
-import json
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import HTTPException
 
 app = FastAPI()
 client = MongoClient("mongodb+srv://Joben:Anne060123@joben.a1aoz0g.mongodb.net/?retryWrites=true&w=majority")
@@ -141,8 +141,12 @@ async def create_text_file(text_data: TextFileInput):
     collection = db.get_collection("Ebooks")
     file_path = new_directory / file_name
     existing_user = collection.find_one({"title": Book_store})
+    existing_data = collection.find_one({"chapter": file_name})
     if existing_user is None:
         return { "status": False, "Message": "Wrong Data"}
+    
+    if existing_data:
+        return{"message": "Already had a chapter title"}
     
     try:
         with open(file_path, "w") as file:
@@ -150,11 +154,18 @@ async def create_text_file(text_data: TextFileInput):
             collection.update_one(
             {"title": Book_store},
             {"$push": {"chapter": file_name}}
-    )
+            )
 
         return {"status": True}
     except Exception as e:
-        return {"error": f"An error occurred: {str(e)}"}
+        with open(file_path, "w", encoding="utf-8") as file:
+            file.write(text_content)
+            collection.update_one(
+            {"title": Book_store},
+            {"$push": {"chapter": file_name}}
+            )
+            
+        return {"status": True}
     # return directory_path
 
 @app.post("/read_file/")
@@ -168,21 +179,34 @@ def read_root(data: Contents):
         return {"error": "File not found"}
 
     # Read the content of the file
-    with open(file_path, "r") as file:
-        file_content = file.read()
+    try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            file_content = file.read()
 
-    return {"message": file_content}
+
+        return {"message": file_content}
+    except Exception as e:  
+        with open(file_path, "r") as file:
+            file_content = file.read()
+
+
+        return {"message": file_content}
+    
+
 
 @app.post("/add_book/")
 async def read_root(data: Addbook):
     collection = db.get_collection("Users")
     collection2 = db.get_collection("Ebooks")
     existing_user = collection.find_one({"id": data.id})
+    existing_data = collection.find_one({"Books.book": data.book})
     favorite = collection2.find_one({"title": data.book})
     if existing_user is None:
         raise JSONResponse(status_code=404, detail="User not found")
     
-    
+    if existing_data:
+        return{ "detail":"has added already"}
+        
     collection.update_one(
         {"id": data.id},
         {"$push": {"Books": {"book": data.book, "onread": False, "Done": False }}}
