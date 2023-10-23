@@ -15,7 +15,7 @@ function Navbar() {
       dispatch(setNavbar(2));
     }
   }, [first]);
-  // console.log(Navbar);
+  console.log(Navbar);
   return (
     <div className="decoration-stone-800 w-3/12 bg-green-400">
       <h1 className="text-base text-black ">Dashboard</h1>

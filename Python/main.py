@@ -66,8 +66,8 @@ async def create_item(data: ItemCreate):
         item["_id"] = str(item["_id"]) 
         
     if(name == "" or password == "" ):
-        error_message = "Missing data"
-        return JSONResponse(content={"message": error_message}, status_code=401)
+        error_message = "null"
+        return JSONResponse(content={"message": error_message}, status_code=200)
     
     elif(data2 == [] and data3 == []):
         collection.insert_one(data.dict())
@@ -87,8 +87,8 @@ async def create_item(data: ItemCreate):
         error_message = "Missing data"
         return JSONResponse(content={"message": error_message}, status_code=401)
     elif(data2 == []):
-        error_message = "No data"
-        return JSONResponse(content={"data": error_message}, status_code=401)
+        error_message = "null"
+        return JSONResponse(content={"data": error_message}, status_code=200)
 
     return data2
 

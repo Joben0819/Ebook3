@@ -1,0 +1,78 @@
+import React,{useState} from "react";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+  } from "@/components/ui/card"
+  import { Input } from "@/components/ui/input"
+  import { Button } from "@/components/ui/button"
+  import { Loader2 } from "lucide-react"
+  import { setModal } from "@/reducers/gameData"
+  import { useDispatch, useSelector } from "react-redux"
+  import { Registered } from "@/api";
+
+export default function Register(){
+    const dispatch = useDispatch()
+    const [state, setstate] = useState(false)
+    const [name, setname] = useState('')
+    const [password, setpassword] = useState('')
+
+    const Log = () => {
+        Registered({name: name,password: password})
+        .then(
+          res => {
+            if(res.status === 200){
+              if(res.data.message === "null"){
+                setstate(true)
+                setTimeout(() => {
+                  setstate(false)
+                  alert("Wrong passcode")
+                },800)              
+              }else{
+                setstate(true)
+                setTimeout(() => {
+                  setstate(false)
+                  dispatch(setModal(1))
+                },800)
+              }
+            }
+            else{
+              setstate(true)
+              setTimeout(() => {
+                setstate(false)
+                alert("Wrong passcode")
+              }, 300);
+            }
+          }
+        )
+      }
+    return(
+        <div className="w-full h-full items-center flex justify-center fixed" style={{backgroundColor: "rgba(.5,.5,.5,0.3)", zIndex: "1"}}>
+        <Card className="h-80 w-80">
+          <CardHeader>
+            <CardTitle>Register</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Input placeholder="username" onChange={(e) => {setname(e.target.value)}}/>
+          </CardContent>
+          <CardContent>
+            <Input placeholder="Password" onChange={(e) => {setpassword(e.target.value)}}/>
+          </CardContent>   
+          <CardContent className="flex justify-between">
+            <Button disabled={state} onClick={Log}>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" style={{display: state ? "" : "none"}} />
+              {state === false ?  "Register" : ""}
+            </Button>
+            <Button onClick={() => {
+                  dispatch(setModal(1))
+                }}>
+                  Login
+            </Button>
+          </CardContent>         
+        </Card>
+      </div>
+    )
+}
