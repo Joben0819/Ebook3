@@ -6,13 +6,15 @@ export interface GameDataState {
   eventSignInPopup: any;
   Navbar: number;
   Modal: number;
-  Response: any
+  Response: any;
+  Chapter: any;
 }
 const initialState: GameDataState = {
   theme: "default",
   Navbar: 1,
   Modal: 1,
   Response: [],
+  Chapter: [],
 
   eventSignInPopup: {},
 };
@@ -30,11 +32,14 @@ const gameDataSlice = createSlice({
       state.Navbar = action.payload;
     },
     setModal: (state, action) => {
-      state.Modal = action.payload
+      state.Modal = action.payload;
     },
     setResponse: (state, action) => {
-      state.Response = action.payload
-    }
+      state.Response = action.payload;
+    },
+    setChapter: (state, action) => {
+      state.Chapter = action.payload;
+    },
   },
 });
 // ---- Getters ---- //
@@ -45,6 +50,12 @@ export const selectDefaultLanguage = (state: any) => {
   );
   return defaultLanguage || null;
 };
-export const { resetGameDataState, setEventSignInPopup, setModal, setNavbar, setResponse } =
-  gameDataSlice.actions;
+export const {
+  resetGameDataState,
+  setEventSignInPopup,
+  setModal,
+  setNavbar,
+  setResponse,
+  setChapter,
+} = gameDataSlice.actions;
 export default gameDataSlice.reducer;

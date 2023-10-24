@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import Providers from "@/components/Providers";
 import { getServerSession } from "next-auth";
 import SessionProvider from "../components/SessionProviders";
+import Modal from "@/components/Modals";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -23,7 +24,10 @@ export default async function RootLayout({
       <body className={inter.className}>
         <Providers>
           {" "}
-          <SessionProvider session={session}>{children}</SessionProvider>
+          <SessionProvider session={session}>
+            <Modal />
+            {children}
+          </SessionProvider>
         </Providers>
       </body>
     </html>
