@@ -3,8 +3,9 @@ import Bookstore from "@/assets/Books/Library.png";
 import Image from "next/image";
 import { Books } from "@/api";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setChapter } from "@/reducers/gameData";
+import { RootState } from "@/store";
 
 function index() {
   const sample = [
@@ -37,6 +38,7 @@ function index() {
   const [read, setread] = useState(false);
   const [data, setdata] = useState<any>([]);
   const dispatch = useDispatch();
+  const { Response } = useSelector((state: RootState) => state.gameData);
 
   useEffect(() => {
     const inputElement = document.getElementById(
@@ -69,6 +71,7 @@ function index() {
       ? data
       : data.filter((product: any) => product.title === part);
 
+  console.log(Response);
   return (
     <div className="flex w-full items-center h-[90] flex-col gap-12">
       <div className="flex-col flex w-full items-center">
@@ -84,6 +87,7 @@ function index() {
               className="w-44 h-52 relative flex items-center flex-col group/item hover:bg-slate-100 ..."
               key={index}
             >
+              <div className="absolute right-[10px] z-[1] top-[0] rounded-[10px] bg-green-500 h-[20px] w-[20px]"></div>
               <div className="relative w-11/12 relative h-48">
                 <Image src={data.base64img} alt={data.title} fill />
               </div>

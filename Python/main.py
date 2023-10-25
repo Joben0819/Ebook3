@@ -1,17 +1,53 @@
 # import sys
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, Header, Request
 from pymongo import MongoClient
 from fastapi.responses import JSONResponse
+from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 from pathlib import Path
 import os
+import random
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import HTTPException
+import jwt
+
+SECRET_KEY = "4"
+
+def create_token(data: dict, secret:str, expires_delta: int):
+    to_encode = data.copy()
+    encoded_jwt = jwt.encode(to_encode, secret, algorithm="HS256")
+    return encoded_jwt
+
+def decode_token(token: str, secret:str):
+    try:
+        payload = jwt.decode(token, secret, algorithms=["HS256"])
+        return payload
+    except jwt.ExpiredSignatureError:
+        return {"error": "Token has expired"}
+    except jwt.DecodeError:
+        return {"error": "Invalid token"}
+
+user_data = {"sub": "Joben"}
+token = create_token(user_data, secret="3", expires_delta=3600)  # 1 hour expiration
+decoded_token = decode_token(token, secret="3")
+# print(decoded_token, 'ss')
+
+def print_and_increment():
+    if not hasattr(print_and_increment, 'counter'):
+        print_and_increment.counter = 1
+    else:
+        print_and_increment.counter += 1
+
+    return print_and_increment.counter
+
+# print_and_increment() 
+
 
 app = FastAPI()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 client = MongoClient("mongodb+srv://Joben:Anne060123@joben.a1aoz0g.mongodb.net/?retryWrites=true&w=majority")
 db = client["Users"] 
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], 
@@ -28,7 +64,11 @@ def read_root():
 def read_root():
     return {"message": "part1"}
 
-class ItemCreate(BaseModel):
+class Register(BaseModel):
+    name: str
+    password: str
+    id: int
+class Login(BaseModel):
     name: str
     password: str
 class FolderInput(BaseModel):
@@ -52,7 +92,8 @@ class Addbook(BaseModel):
     book: str
     
 @app.post("/register/")
-async def create_item(data: ItemCreate):
+async def create_item(data: Register):
+    key = f'{print_and_increment()}'
     name = data.name
     password = data.password
     collection = db.get_collection("Users")
@@ -71,12 +112,21 @@ async def create_item(data: ItemCreate):
     
     elif(data2 == [] and data3 == []):
         collection.insert_one(data.dict())
-        return JSONResponse(content={"message": "success"}, status_code=200)
+        response = JSONResponse(content={"message": "success"}, status_code=200)
+        response.set_cookie(key="key", value="1") 
+        user_data = {"sub": name}
+        token = create_token(user_data, secret=key, expires_delta=3600)
+        collection.update_one(
+        {"name": name},
+        {"$set": {"token": token}}
+        )
+        return response
     
     return JSONResponse(content={"message": "already have existed Password or Username"}, status_code=200)   
   
 @app.post("/login")
-async def create_item(data: ItemCreate):
+async def create_item(data: Login, request: Request,):
+    key = f'{print_and_increment()}'
     collection = db["Users"]
     password = data.password
     name = data.name
@@ -89,10 +139,23 @@ async def create_item(data: ItemCreate):
     elif(data2 == []):
         error_message = "null"
         return JSONResponse(content={"data": error_message}, status_code=200)
+    
+    elif data2:
+        response = JSONResponse(data2)
+        random_float = random.randint(1, 100)
+        response.set_cookie(key="key", value=random_float) 
+        user_data = {"sub": name}
+        token = create_token(user_data, random_float, expires_delta=3600)
+        user_id = request.cookies.get("key")
+        collection.update_one(
+        {"name": name},
+        {"$set": {"token": token, "key": random_float}}
+        )
+        
 
-    return data2
+    return response
 
-@app.get("/get_data/")
+@app.post("/get_data/")
 async def get_data():
     collection = db["Ebooks"]
     data = list(collection.find({}))
@@ -100,6 +163,20 @@ async def get_data():
         item["_id"] = str(item["_id"])  
     return data
 
+@app.post("/example/")
+async def read_user_agent(request: Request, token: str = Header(None)):
+    user_id = request.cookies.get("key")
+    user_info = decode_token(token , user_id)
+    random_float = random.randint(1, 100)
+    return {"token": random_float, "id": user_id , "secret": SECRET_KEY}
+
+
+
+@app.get("/set-cookie/")
+async def set_cookie():
+    response2 = JSONResponse(content={"message": "Cookie "})
+    response2.set_cookie(key="key", value="1")  # Set the cookie "user_id" with a value and a maximum age in seconds
+    return response2
 
 @app.get("/get_user_data/")
 async def get_data():

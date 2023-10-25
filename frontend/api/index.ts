@@ -12,7 +12,7 @@ const axiosInstance = axios.create({
 export const api = async (
   param: string,
   method: string,
-  data?: any
+  data: any
 ): Promise<any> => {
   const url = Domain + param;
   var globalHeaders = {
@@ -47,7 +47,7 @@ export const api = async (
   }
 };
 
-export function Register(data: any) {
+export function Registered(data: any) {
   return api("/register", Post, data);
 }
 

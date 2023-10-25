@@ -8,6 +8,7 @@ export interface GameDataState {
   Modal: number;
   Response: any;
   Chapter: any;
+  Userdata: any;
 }
 const initialState: GameDataState = {
   theme: "default",
@@ -15,6 +16,7 @@ const initialState: GameDataState = {
   Modal: 1,
   Response: [],
   Chapter: [],
+  Userdata: [],
 
   eventSignInPopup: {},
 };
@@ -40,6 +42,9 @@ const gameDataSlice = createSlice({
     setChapter: (state, action) => {
       state.Chapter = action.payload;
     },
+    setUserdata: (state, action) => {
+      state.Userdata = action.payload;
+    },
   },
 });
 // ---- Getters ---- //
@@ -57,5 +62,6 @@ export const {
   setNavbar,
   setResponse,
   setChapter,
+  setUserdata,
 } = gameDataSlice.actions;
 export default gameDataSlice.reducer;

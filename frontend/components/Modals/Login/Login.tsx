@@ -62,7 +62,7 @@ export default function Login() {
     <>
       <div
         className="w-full h-full items-center flex justify-center fixed"
-        style={{ backgroundColor: "rgba(.5,.5,.5,0.3)", zIndex: "1" }}
+        style={{ backgroundColor: "rgba(.5,.5,.5,0.3)", zIndex: "2" }}
       >
         <Card className="h-64 w-80">
           <CardHeader>
