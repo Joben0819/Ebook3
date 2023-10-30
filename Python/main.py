@@ -27,7 +27,7 @@ def decode_token(token: str, secret:str):
         return {"error": "Invalid token"}
 
 user_data = {"sub": "Joben"}
-token = create_token(user_data, secret="3", expires_delta=3600)  # 1 hour expiration
+token = create_token(user_data, secret="3", expires_delta=3600)  
 decoded_token = decode_token(token, secret="3")
 # print(decoded_token, 'ss')
 
@@ -90,6 +90,11 @@ class Process(BaseModel):
 class Addbook(BaseModel):
     id: int
     book: str
+    name: str
+    
+class AddbookData(BaseModel):
+    name: str
+    id: int
     
 @app.post("/register/")
 async def create_item(data: Register):
@@ -126,13 +131,16 @@ async def create_item(data: Register):
   
 @app.post("/login")
 async def create_item(data: Login, request: Request,):
-    key = f'{print_and_increment()}'
+    random_float = F'{random.randint(1, 100)}'
+    number100 = random_float
     collection = db["Users"]
     password = data.password
     name = data.name
     data2 = list(collection.find({"name": name, "password": password}))
+    
     for item in data2:
         item["_id"] = str(item["_id"])  
+        
     if(name == "" or password == "" ):
         error_message = "Missing data"
         return JSONResponse(content={"message": error_message}, status_code=401)
@@ -141,52 +149,62 @@ async def create_item(data: Login, request: Request,):
         return JSONResponse(content={"data": error_message}, status_code=200)
     
     elif data2:
-        response = JSONResponse(data2)
-        random_float = random.randint(1, 100)
-        response.set_cookie(key="key", value=random_float) 
+        data3 = JSONResponse(data2)
+        data3.set_cookie(key="key", value=number100)  
         user_data = {"sub": name}
-        token = create_token(user_data, random_float, expires_delta=3600)
-        user_id = request.cookies.get("key")
+        token = create_token(user_data, number100, expires_delta=3600)
+        token2 = decode_token(token, number100)
         collection.update_one(
         {"name": name},
-        {"$set": {"token": token, "key": random_float}}
+        {"$set": {"token": token, "token2": random_float, 'token3': number100, 'response': token2}} 
         )
         
 
-    return response
+    return data2
 
-@app.post("/get_data/")
+@app.get("/get_data/")
 async def get_data():
     collection = db["Ebooks"]
     data = list(collection.find({}))
     for item in data:
         item["_id"] = str(item["_id"])  
-    return data
+    data2 = JSONResponse(data)
+    return data2
 
-@app.post("/example/")
+@app.get("/example/")
 async def read_user_agent(request: Request, token: str = Header(None)):
     user_id = request.cookies.get("key")
     user_info = decode_token(token , user_id)
     random_float = random.randint(1, 100)
-    return {"token": random_float, "id": user_id , "secret": SECRET_KEY}
+    return {"token": random_float, "id": user_id , "secret": SECRET_KEY, 'result': user_info}
 
+# @app.get("/set-cookie/")
+# async def set_cookie(request: Request):
+#     random_float = F'{random.randint(1, 100)}'
+#     user_id = f'{request.cookies.get("key")}'
+#     response2 = JSONResponse(content={"message": user_id})
+#     response2.set_cookie(key="key", value=random_float)  
+#     return response2
 
-
-@app.get("/set-cookie/")
-async def set_cookie():
-    response2 = JSONResponse(content={"message": "Cookie "})
-    response2.set_cookie(key="key", value="1")  # Set the cookie "user_id" with a value and a maximum age in seconds
-    return response2
-
-@app.get("/get_user_data/")
-async def get_data():
+@app.post("/get_user_data/")
+async def get_data(data):
     collection = db["Users"]
-    data = list(collection.find({}))
+
     for item in data:
         item["_id"] = str(item["_id"])  
     return data
 
-
+@app.post("/Added_books/")
+async def get_data(data: AddbookData):
+    collection = db["Addbook"]
+    name = data.name
+    if name is None or name == "":
+        return {"data": "None"}
+    else:
+        data2 = list(collection.find({"id": data.id}))
+        for item in data2:
+            item["_id"] = str(item["_id"])  
+        return data2
 
 @app.post("/create_folder/")
 async def create_folder(folder_name: FolderInput):
@@ -251,11 +269,9 @@ def read_root(data: Contents):
     book = data.Book
     file_path = f"./Ebooks/{book}/{num}"
 
-    # Check if the file exists
     if not os.path.exists(file_path):
         return {"error": "File not found"}
 
-    # Read the content of the file
     try:
         with open(file_path, "r", encoding="utf-8") as file:
             file_content = file.read()
@@ -269,34 +285,74 @@ def read_root(data: Contents):
 
         return {"message": file_content}
     
-
-
 @app.post("/add_book/")
 async def read_root(data: Addbook):
-    collection = db.get_collection("Users")
+    collection = db.get_collection("Addbook")
     collection2 = db.get_collection("Ebooks")
     existing_user = collection.find_one({"id": data.id})
-    existing_data = collection.find_one({"Books.book": data.book})
-    favorite = collection2.find_one({"title": data.book})
+    existing_data = list(collection.find({"Books.book": data.book, "id": data.id}))   
+    for item in existing_data:
+        item["_id"] = str(item["_id"])  
     if existing_user is None:
-        raise JSONResponse(status_code=404, detail="User not found")
-    
-    if existing_data:
+        collection.insert_one({"id": data.id, "name": data.name,"Books": [{"book": data.book, "onread": False, "Done": False }]})
+        return{"detail": "Added"}  
+       
+    elif existing_data:
         return{ "detail":"has added already"}
-        
-    collection.update_one(
+    
+    elif existing_data == []:
+        collection.update_one(
         {"id": data.id},
         {"$push": {"Books": {"book": data.book, "onread": False, "Done": False }}}
-    )
-    collection2.update_one(
-        {"title": data.book},
-        {"$set": {"status": True}}
-    )
-    return {"message": f"Book '{data.book}' added to 'read' list successfully {data.id}"}
+        )
+        collection2.update_one(
+            {"title": data.book},
+            {"$set": {"status": True}}
+        )
+        return { "detail":"Already Added"}
+    
+    # collection.insert_one({"id": data.id, "name": data.name,"Books": {"book": data.book, "onread": False, "Done": False }})
+
+    # collection2.update_one(
+    #     {"title": data.book},
+    #     {"$set": {"status": True}}
+    # )
+    # id = data.id
+    # name = data.name
+    # book = data.book
+    # collection = db.get_collection("Addbook")
+    # data3 = list(collection.find({ "id": id}))
+    # existing_data = collection.find_one({"Books.book": book})
+    # # data2 = list(collection.find({"name": name, "password": password}))
+    # for item in data3:
+    #     item["_id"] = str(item["_id"]) 
+        
+    # if(name == ""  ):
+    #     error_message = "null"
+    #     return JSONResponse(content={"message": error_message}, status_code=200)
+    
+    # elif( data3 == []):
+    #     collection.insert_one({"id": id, "name": name,"Books": {"book": book, "onread": False, "Done": False }})
+    #     response = JSONResponse(content={"message": "Added"}, status_code=200)
+    #     return response
+    
+    # elif existing_data:
+    #     response = JSONResponse(content={"message": "Already Added"}, status_code=200)
+    #     return data3
+    
+    # elif data3:
+    #     collection.update_one(
+    #     {"id": id},
+    #     {"$push": {"Books": {"book": book, "onread": False, "Done": False }}}
+    #     )
+    #     response = JSONResponse(content={"message": "Addition"}, status_code=200)
+    #     return response
+    
+    # return JSONResponse(content={"message": "already have existed Password or Username"}, status_code=200)   
 
 @app.post("/remove_book/")
 async def read_root(data: Addbook):
-    collection = db.get_collection("Users")
+    collection = db.get_collection("Addbook")
     collection2 = db.get_collection("Ebooks")
     existing_user = collection.find_one({"id": data.id})
     # favorite = collection2.find_one({"title": data.book})
@@ -312,49 +368,40 @@ async def read_root(data: Addbook):
         {"$set": {"status": False}}
     )
 
-    return {"message": f"Book '{data.book}' added to 'read' list successfully {data.id}"}
-
 @app.post("/mark_as_done/")
 async def read_root(data: Process):
     id = data.id
     book = data.book
-    collection = db.get_collection("Users")
-
-    # Check if the user already exists in the collection
-    existing_user = collection.find_one({"id": id})
-    if existing_user is None:
-        raise JSONResponse(status_code=404, detail="User not found")
-
-    # Add the book to the "read" list
-    collection.update_one(
-        {"id": data.id, "Books.book": book},
-         {"$set": {"Books.$.Done": True}}
-    )
-
-
-    return {"message": f"Book '{book}' marked as done successfully for user {id}"}
-
+    collection = db.get_collection("Addbook")
+    # existing_data = collection.find_one({"Books.book": book})
+    existing_book = list(collection.find({"Books.book": data.book, "id": data.id}))   
+    for item in existing_book:
+        item["_id"] = str(item["_id"])  
+        
+    if existing_book:
+        collection.update_one(
+            {"id": id, "Books.book": book},
+            {"$set": {"Books.$.Done": True}}
+        )
+        return {"detail": "Done"}
 
 @app.post("/mark_as_onread/")
 async def read_root(data: Process):
     id = data.id
     book = data.book
-    collection = db.get_collection("Users")
-
-    # Check if the user already exists in the collection
-    existing_user = collection.find_one({"id": id})
-    if existing_user is None:
-        raise JSONResponse(status_code=404, detail="User not found")
-
-    # Add the book to the "read" list
-    collection.update_one(
-        {"id": data.id, "Books.book": book},
-         {"$set": {"Books.$.onread": True}}
-    )
-
-    return {"message": f"Book '{book}' marked as done successfully for user {id}"}
-
-
+    collection = db.get_collection("Addbook")
+    # existing_data = collection.find_one({"Books.book": book})
+    existing_book = list(collection.find({"Books.book": data.book, "id": data.id}))   
+    for item in existing_book:
+        item["_id"] = str(item["_id"])  
+        
+    if existing_book:
+        collection.update_one(
+            {"id": id, "Books.book": book},
+            {"$set": {"Books.$.onread": True}}
+        )
+        return {"detail": "onread"}
+    
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

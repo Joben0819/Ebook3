@@ -8,8 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 export default function Modal() {
   const [data, setdata] = useState(1);
   const { Modal } = useSelector((state: RootState) => state.gameData);
-
-  console.log("ss");
   useEffect(() => {
     if (Modal === 1) {
       setdata(1);

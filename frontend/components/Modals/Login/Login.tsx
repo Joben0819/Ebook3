@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { RootState } from "@/store";
-import { setModal, setResponse } from "@/reducers/gameData";
+import { setModal, setResponse, AddBooked } from "@/reducers/gameData";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "@/api";
 export default function Login() {
@@ -41,6 +41,10 @@ export default function Login() {
           }, 400);
         } else {
           setstate(true);
+          // console.log(res.data[0].id);
+          const ids = res.data[0].id;
+          //@ts-ignore
+          dispatch(AddBooked(name, ids));
           setTimeout(() => {
             setstate(false);
             sessionStorage.setItem("data", "meron");
@@ -57,7 +61,7 @@ export default function Login() {
       }
     });
   };
-  console.log("hell0");
+  // console.log("hell0");
   return (
     <>
       <div

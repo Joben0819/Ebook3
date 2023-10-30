@@ -6,22 +6,22 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { text } from "@/utils/helpers";
 import { RootState } from "@/store";
-import { setModal } from "@/reducers/gameData";
+import { setModal, AddBooked } from "@/reducers/gameData";
 import { useDispatch, useSelector } from "react-redux";
 
 function index(props: any) {
   const { Modal } = useSelector((state: RootState) => state.gameData);
   const dispatch = useDispatch();
-  useEffect(() => {
-    window.onbeforeunload = () => {
-      sessionStorage.setItem("data", "");
-    };
+  // useEffect(() => {
+  //   window.onbeforeunload = () => {
+  //     sessionStorage.setItem("data", "");
+  //   };
 
-    // Cleanup the event handler when the component unmounts
-    return () => {
-      window.onbeforeunload = null;
-    };
-  }, []);
+  //   // Cleanup the event handler when the component unmounts
+  //   return () => {
+  //     window.onbeforeunload = null;
+  //   };
+  // }, []);
 
   const router = useRouter();
   const route = () => {
@@ -37,11 +37,20 @@ function index(props: any) {
           className="w-20 flex items-center gap-2 "
           style={{ cursor: "pointer" }}
           onClick={() => {
-            dispatch(setModal(1)), sessionStorage.removeItem("data");
+            dispatch(setModal(1)),
+              sessionStorage.removeItem("data"),
+              //@ts-ignore
+              dispatch(AddBooked("", 0));
           }}
         >
           <div className="w-4 relative h-5">
-            <Image src={Booked} alt="book" fill />
+            <Image
+              src={Booked}
+              alt="book"
+              sizes="(max-width: 100vw) 100vw"
+              priority={true}
+              fill
+            />
           </div>{" "}
           Logout
         </div>
@@ -52,7 +61,13 @@ function index(props: any) {
         onClick={route2}
       >
         <div className="w-4 relative h-5">
-          <Image src={Booked} alt="book" fill />
+          <Image
+            src={Booked}
+            alt="book"
+            sizes="(max-width: 100vw) 100vw"
+            priority={true}
+            fill
+          />
         </div>{" "}
         Books
       </div>
@@ -62,7 +77,13 @@ function index(props: any) {
         onClick={route}
       >
         <div className="w-4 relative h-5">
-          <Image src={Read} alt="book" fill />
+          <Image
+            src={Read}
+            alt="book"
+            sizes="(max-width: 100vw) 100vw"
+            priority={true}
+            fill
+          />
         </div>
         Library
       </div>

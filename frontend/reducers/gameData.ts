@@ -1,5 +1,6 @@
 import { AnyAction, createSlice, ThunkAction } from "@reduxjs/toolkit";
 import { RootState } from "@/store";
+import { AddedBooks } from "@/api";
 
 export interface GameDataState {
   theme: string;
@@ -9,6 +10,7 @@ export interface GameDataState {
   Response: any;
   Chapter: any;
   Userdata: any;
+  AddedBook: any;
 }
 const initialState: GameDataState = {
   theme: "default",
@@ -17,6 +19,7 @@ const initialState: GameDataState = {
   Response: [],
   Chapter: [],
   Userdata: [],
+  AddedBook: [],
 
   eventSignInPopup: {},
 };
@@ -45,6 +48,9 @@ const gameDataSlice = createSlice({
     setUserdata: (state, action) => {
       state.Userdata = action.payload;
     },
+    setAddedBook: (state, action) => {
+      state.AddedBook = action.payload;
+    },
   },
 });
 // ---- Getters ---- //
@@ -63,5 +69,21 @@ export const {
   setResponse,
   setChapter,
   setUserdata,
+  setAddedBook,
 } = gameDataSlice.actions;
 export default gameDataSlice.reducer;
+
+export const AddBooked = (
+  name: string,
+  id: number
+): ThunkAction<void, RootState, null, AnyAction> => {
+  return (dispatch) => {
+    AddedBooks({ name, id }).then((res: any) => {
+      if (res.data.data === "None") {
+        dispatch(setAddedBook([]));
+      } else {
+        dispatch(setAddedBook(res.data[0].Books));
+      }
+    });
+  };
+};

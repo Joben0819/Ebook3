@@ -70,3 +70,7 @@ export function ReadFile(data: any) {
 export function CreateFile(data: any) {
   return api("/create_text_file", Post, data);
 }
+
+export function AddedBooks(data: any) {
+  return api("/Added_books", Post, data);
+}

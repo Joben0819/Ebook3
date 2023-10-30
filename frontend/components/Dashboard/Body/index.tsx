@@ -1,7 +1,8 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import Bookstore from "@/assets/Books/Library.png";
 import Image from "next/image";
-import { Books } from "@/api";
+import { Books, AddedBooks } from "@/api";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { setChapter } from "@/reducers/gameData";
@@ -35,10 +36,12 @@ function index() {
   ];
   const router = useRouter();
   const [part, separt] = useState<any | null>("");
-  const [read, setread] = useState(false);
+  const [added, setadded] = useState<any>([]);
   const [data, setdata] = useState<any>([]);
   const dispatch = useDispatch();
-  const { Response } = useSelector((state: RootState) => state.gameData);
+  const { Response, AddedBook } = useSelector(
+    (state: RootState) => state.gameData
+  );
 
   useEffect(() => {
     const inputElement = document.getElementById(
@@ -60,6 +63,10 @@ function index() {
       setdata(res.data);
     });
 
+    AddedBooks({ name: "Kathleen", id: 2 }).then((res) =>
+      setadded(res.data[0].Books)
+    );
+
     return () => {
       if (inputElement) {
         inputElement.removeEventListener("keydown", handleKeyPress);
@@ -71,12 +78,20 @@ function index() {
       ? data
       : data.filter((product: any) => product.title === part);
 
-  console.log(Response);
+  // console.log(added[0]?.book, Response, "Response");
+
   return (
     <div className="flex w-full items-center h-[90] flex-col gap-12">
       <div className="flex-col flex w-full items-center">
         <div className="w-14 relative h-16 flex">
-          <Image src={Bookstore} alt="library" fill />
+          <Image
+            src={Bookstore}
+            alt="1"
+            sizes="(max-width: 100vw) 100vw"
+            priority={true}
+            quality={100}
+            fill
+          />
         </div>
         <h3 className="text-center">Books</h3>
       </div>
@@ -87,9 +102,19 @@ function index() {
               className="w-44 h-52 relative flex items-center flex-col group/item hover:bg-slate-100 ..."
               key={index}
             >
-              <div className="absolute right-[10px] z-[1] top-[0] rounded-[10px] bg-green-500 h-[20px] w-[20px]"></div>
+              {AddedBook[index]?.book === data.title ? (
+                <div className="absolute right-[10px] z-[1] top-[0] rounded-[10px] bg-green-500 h-[20px] w-[20px]"></div>
+              ) : (
+                ""
+              )}
               <div className="relative w-11/12 relative h-48">
-                <Image src={data.base64img} alt={data.title} fill />
+                <Image
+                  src={data.base64img ? data.base64img : Bookstore}
+                  alt={data.title}
+                  sizes="(max-width: 100vw) 100vw"
+                  priority={true}
+                  fill
+                />
               </div>
               {data.title}
               <div
@@ -98,7 +123,15 @@ function index() {
               >
                 <span
                   className="group-hover/edit:text-gray-700 ..."
-                  style={{ cursor: "pointer", color: "#fff" }}
+                  style={{
+                    cursor: "pointer",
+                    color:
+                      AddedBook[index]?.book === data.title ? "blue" : "#fff",
+                  }}
+                  onClick={() => {
+                    //@ts-ignore
+                    dispatch(AddBooked(Response.name, Response.id));
+                  }}
                 >
                   Favorite
                 </span>
@@ -117,14 +150,6 @@ function index() {
           );
         })}
       </div>
-      {read && (
-        <div
-          className="absolute w-full flex justify-center items-center h-full"
-          style={{ backgroundColor: "rgba(.5, .5, .5, .3)", top: "0" }}
-        >
-          ss
-        </div>
-      )}
     </div>
   );
 }
