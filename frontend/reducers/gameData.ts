@@ -79,6 +79,7 @@ export const AddBooked = (
 ): ThunkAction<void, RootState, null, AnyAction> => {
   return (dispatch) => {
     AddedBooks({ name, id }).then((res: any) => {
+      console.log(res, name, id);
       if (res.data.data === "None") {
         dispatch(setAddedBook([]));
       } else {

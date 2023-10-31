@@ -1,11 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { AddedBooks, Books } from "@/api";
+import { AddedBooks, Books, RemoveBook } from "@/api";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
-import { setChapter } from "@/reducers/gameData";
+import { setChapter, AddBooked } from "@/reducers/gameData";
 import { useRouter } from "next/navigation";
 import Bookstore from "@/assets/Books/Library.png";
+import { RootState } from "@/store";
 
 export default function index() {
   const sample = [
@@ -38,6 +39,9 @@ export default function index() {
   const [data, setdata] = useState<any>([]);
   const dispatch = useDispatch();
   const router = useRouter();
+  const { Response, AddedBook } = useSelector(
+    (state: RootState) => state.gameData
+  );
 
   useEffect(() => {
     const inputElement = document.getElementById(
@@ -70,11 +74,29 @@ export default function index() {
     };
   }, []);
 
-  const filteredProducts =
-    part?.length === 0
-      ? data
-      : data.filter((product: any) => product.title === part);
+  const filteredProducts = data.filter(
+    (product: any, index: number) =>
+      product.title ===
+      AddedBook[Number(sessionStorage.getItem(`${index}-id`))]?.book
+  );
 
+  function Removed(datas: string, index: number) {
+    console.log(Response.id, data, Response.name, "here");
+    // const books = data.filter(
+    //   (item: any) => item.title === AddedBook[index].book
+    // );
+    RemoveBook({ id: Response.id, book: datas, name: Response.name }).then(
+      (res) => {
+        sessionStorage.removeItem(`${index}-id`);
+
+        //@ts-ignore
+        dispatch(AddBooked(Response.name, Response.id));
+        alert("wala");
+      }
+    );
+    // console.log(index, "here");
+  }
+  //   console.log(filteredProducts, data, AddedBook);
   return (
     <>
       <div className="h-full flex items-center flex-col gap-12">
@@ -82,49 +104,53 @@ export default function index() {
           Library
         </div>
         <div className="w-full h-full flex gap-y-8 flex-wrap gap-20 justify-center">
-          {filteredProducts.map((data: any, index: number) => {
+          {AddedBook.map((data: any, index: number) => {
             return (
               <div
                 className="w-44 relative h-52 flex items-center flex-col group/item hover:bg-slate-100 ..."
                 key={index}
               >
-                {added[index]?.book === data.title ? (
-                  <>
-                    <div className="relative w-11/12 relative h-48">
-                      <Image
-                        src={data.base64img ? data.base64img : Bookstore}
-                        alt={data.title}
-                        sizes="(max-width: 100vw) 100vw"
-                        priority={true}
-                        fill
-                      />
-                    </div>
-                    {data.title}
-                    <div
-                      className="group/edit invisible absolute w-full flex-col h-full flex justify-center items-center group-hover/item:visible ..."
-                      style={{ backgroundColor: "rgba(.5, .5, .5, .3)" }}
-                    >
-                      <span
-                        className="group-hover/edit:text-gray-700 ..."
-                        style={{ cursor: "pointer", color: "#fff" }}
-                      >
-                        Delete
-                      </span>
-                      <span
-                        className="group-hover/edit:text-gray-700 ..."
-                        style={{ cursor: "pointer", color: "#fff" }}
-                        onClick={() => {
-                          router.push(`/read?Book=${data.title}&data=0`),
-                            dispatch(setChapter(data.chapter));
-                        }}
-                      >
-                        Read
-                      </span>
-                    </div>
-                  </>
+                {/* {AddedBook[Number(sessionStorage.getItem(`${index}-id`))]
+                  ?.book === data.title ? (
+                  <> */}
+                <div className="relative w-11/12 relative h-48">
+                  <Image
+                    src={data.image ? data.image : Bookstore}
+                    alt={data.title}
+                    sizes="(max-width: 100vw) 100vw"
+                    priority={true}
+                    fill
+                  />
+                </div>
+                {data.title}
+                <div
+                  className="group/edit invisible absolute w-full flex-col h-full flex justify-center items-center group-hover/item:visible ..."
+                  style={{ backgroundColor: "rgba(.5, .5, .5, .3)" }}
+                >
+                  <span
+                    className="group-hover/edit:text-gray-700 ..."
+                    style={{ cursor: "pointer", color: "blue" }}
+                    onClick={() => {
+                      Removed(data.book, data.idx);
+                    }}
+                  >
+                    Removed
+                  </span>
+                  <span
+                    className="group-hover/edit:text-gray-700 ..."
+                    style={{ cursor: "pointer", color: "#fff" }}
+                    onClick={() => {
+                      router.push(`/read?Book=${data.title}&data=0`),
+                        dispatch(setChapter(data.chapter));
+                    }}
+                  >
+                    Read
+                  </span>
+                </div>
+                {/* </>
                 ) : (
                   ""
-                )}
+                )} */}
               </div>
             );
           })}

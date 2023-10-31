@@ -90,8 +90,14 @@ class Process(BaseModel):
 class Addbook(BaseModel):
     id: int
     book: str
+    image: str
     name: str
+    idx: int
     
+class Removebook(BaseModel):
+    id: int
+    book: str
+    name: str
 class AddbookData(BaseModel):
     name: str
     id: int
@@ -189,7 +195,7 @@ async def read_user_agent(request: Request, token: str = Header(None)):
 @app.post("/get_user_data/")
 async def get_data(data):
     collection = db["Users"]
-
+    data = list(collection.find_one({}))
     for item in data:
         item["_id"] = str(item["_id"])  
     return data
@@ -198,13 +204,16 @@ async def get_data(data):
 async def get_data(data: AddbookData):
     collection = db["Addbook"]
     name = data.name
-    if name is None or name == "":
+    if name is None :
         return {"data": "None"}
     else:
         data2 = list(collection.find({"id": data.id}))
-        for item in data2:
-            item["_id"] = str(item["_id"])  
-        return data2
+        if data2 == []:
+            return {"data": "None"}
+        else:
+            for item in data2:
+                item["_id"] = str(item["_id"])  
+            return data2
 
 @app.post("/create_folder/")
 async def create_folder(folder_name: FolderInput):
@@ -294,7 +303,7 @@ async def read_root(data: Addbook):
     for item in existing_data:
         item["_id"] = str(item["_id"])  
     if existing_user is None:
-        collection.insert_one({"id": data.id, "name": data.name,"Books": [{"book": data.book, "onread": False, "Done": False }]})
+        collection.insert_one({"id": data.id, "name": data.name,"Books": [{"book": data.book, "image": data.image, "idx": data.idx , "onread": False, "Done": False }]})
         return{"detail": "Added"}  
        
     elif existing_data:
@@ -303,13 +312,13 @@ async def read_root(data: Addbook):
     elif existing_data == []:
         collection.update_one(
         {"id": data.id},
-        {"$push": {"Books": {"book": data.book, "onread": False, "Done": False }}}
+        {"$push": {"Books": {"book": data.book, "image": data.image , "idx": data.idx , "onread": False, "Done": False }}}
         )
         collection2.update_one(
             {"title": data.book},
             {"$set": {"status": True}}
         )
-        return { "detail":"Already Added"}
+        return { "detail":"Added"}
     
     # collection.insert_one({"id": data.id, "name": data.name,"Books": {"book": data.book, "onread": False, "Done": False }})
 
@@ -351,7 +360,7 @@ async def read_root(data: Addbook):
     # return JSONResponse(content={"message": "already have existed Password or Username"}, status_code=200)   
 
 @app.post("/remove_book/")
-async def read_root(data: Addbook):
+async def read_root(data: Removebook):
     collection = db.get_collection("Addbook")
     collection2 = db.get_collection("Ebooks")
     existing_user = collection.find_one({"id": data.id})
@@ -367,7 +376,7 @@ async def read_root(data: Addbook):
         {"title": data.book},
         {"$set": {"status": False}}
     )
-
+    return{"detail" : "Removed"}
 @app.post("/mark_as_done/")
 async def read_root(data: Process):
     id = data.id

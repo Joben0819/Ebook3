@@ -30,7 +30,7 @@ function index() {
   const MapProducts = filteredProducts.map(
     (product: any) => product.chapter[Number(number)]
   );
-  console.log(Chapter.length - 1, Number(number), "there's");
+  console.log(Chapter?.length - 1, Number(number), "there's");
 
   return (
     <div className="text-center p-[3rem]">

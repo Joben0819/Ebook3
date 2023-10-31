@@ -74,3 +74,11 @@ export function CreateFile(data: any) {
 export function AddedBooks(data: any) {
   return api("/Added_books", Post, data);
 }
+
+export function AddBook(data: any) {
+  return api("/add_book", Post, data);
+}
+
+export function RemoveBook(data: any) {
+  return api("/remove_book", Post, data);
+}
