@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Books, AddedBooks, AddBook, RemoveBook } from "@/api";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { setChapter, AddBooked } from "@/reducers/gameData";
+import { setChapter, AddBooked, setModal } from "@/reducers/gameData";
 import { RootState } from "@/store";
 import { Item } from "@radix-ui/react-dropdown-menu";
 
@@ -60,9 +60,12 @@ function index() {
     }
 
     Books({}).then((res) => {
-      // console.log(res.data, "here");
       setdata(res.data);
     });
+    if (Response.length !== 0) {
+      //@ts-ignore
+      dispatch(AddBooked(Response.name, Response.id));
+    }
 
     return () => {
       if (inputElement) {
@@ -77,10 +80,18 @@ function index() {
 
   // const addedbooked = ;
 
-  // console.log(addedbooked, "Response");
+  console.log(
+    // AddedBook &&
+    //   AddedBook[Number(sessionStorage.getItem(`${1}-readonly`))]?.Done,
+    // sessionStorage.getItem(`${1}-readonly`)
+    //   ? Number(sessionStorage.getItem(`${1}-readonly`))
+    //   : "",
+    Response.length === 0 ? 2 : Response,
+    "Response"
+  );
 
   function Added(data: string, image: string, index: number) {
-    console.log(Response.id, data, Response.name, image, "here");
+    // console.log(Response.id, data, Response.name, image, "here");
     AddBook({
       id: Response.id,
       book: data,
@@ -99,7 +110,7 @@ function index() {
   }
 
   function Removed(data: string, index: number) {
-    console.log(Response.id, data, Response.name, "here");
+    // console.log(Response.id, data, Response.name, "here");
     RemoveBook({ id: Response.id, book: data, name: Response.name }).then(
       (res) => {
         sessionStorage.removeItem(`${index}-id`);
@@ -114,10 +125,23 @@ function index() {
     AddedBook &&
       AddedBook.map((item: any, idx: number) =>
         item.book === title
-          ? sessionStorage.setItem(`${data}-id`, idx.toString())
+          ? item.status === 1
+            ? sessionStorage.setItem(`${data}-id`, idx.toString())
+            : sessionStorage.setItem(`${data}-readonly`, idx.toString())
           : ""
       );
   }
+
+  useEffect(() => {
+    window.onbeforeunload = () => {
+      if (Response) {
+        dispatch(setModal(1));
+      }
+    };
+    return () => {
+      window.onbeforeunload = null;
+    };
+  }, []);
 
   return (
     <div className="flex w-full items-center h-[90] flex-col gap-12">
@@ -143,8 +167,11 @@ function index() {
               key={index}
             >
               {AddedBook &&
-              AddedBook[Number(sessionStorage.getItem(`${index}-id`))]?.book ===
-                data.title ? (
+              AddedBook[
+                sessionStorage.getItem(`${index}-id`)
+                  ? Number(sessionStorage.getItem(`${index}-id`))
+                  : ""
+              ]?.status === 1 ? (
                 <div className="absolute right-[10px] z-[1] top-[0] rounded-[10px] bg-green-500 h-[20px] w-[20px]"></div>
               ) : (
                 ""
@@ -163,8 +190,12 @@ function index() {
                 className="group/edit invisible absolute w-full flex-col h-full flex justify-center items-center group-hover/item:visible ..."
                 style={{ backgroundColor: "rgba(.5, .5, .5, .3)" }}
               >
-                {AddedBook[Number(sessionStorage.getItem(`${index}-id`))]
-                  ?.book === data.title ? (
+                {AddedBook &&
+                AddedBook[
+                  sessionStorage.getItem(`${index}-id`)
+                    ? Number(sessionStorage.getItem(`${index}-id`))
+                    : ""
+                ]?.book === data.title ? (
                   <span
                     className="group-hover/edit:text-gray-700 ..."
                     style={{
@@ -185,7 +216,10 @@ function index() {
                       color: "#fff",
                     }}
                     onClick={() => {
-                      Added(data.title, data.base64img, index);
+                      if (Response.length !== 0) {
+                        Added(data.title, data.base64img, index);
+                      } else {
+                      }
                     }}
                   >
                     Favorite
@@ -195,11 +229,39 @@ function index() {
                   className="group-hover/edit:text-gray-700 ..."
                   style={{ cursor: "pointer", color: "#fff" }}
                   onClick={() => {
-                    router.push(`/read?Book=${data.title}&data=0`),
-                      dispatch(setChapter(data.chapter));
+                    if (data.chapter) {
+                      router.push(
+                        `/read?Book=${data.title}&data=0&index=${index}`
+                      ),
+                        dispatch(setChapter(data));
+                    } else {
+                      alert("No Story Yet");
+                    }
                   }}
                 >
-                  Read
+                  {AddedBook &&
+                  AddedBook[
+                    sessionStorage.getItem(`${index}-id`)
+                      ? Number(sessionStorage.getItem(`${index}-id`))
+                      : sessionStorage.getItem(`${index}-readonly`)
+                      ? Number(sessionStorage.getItem(`${index}-readonly`))
+                      : ""
+                  ]?.onread === true ? (
+                    AddedBook &&
+                    AddedBook[
+                      sessionStorage.getItem(`${index}-id`)
+                        ? Number(sessionStorage.getItem(`${index}-id`))
+                        : sessionStorage.getItem(`${index}-readonly`)
+                        ? Number(sessionStorage.getItem(`${index}-readonly`))
+                        : ""
+                    ]?.Done === true ? (
+                      <>Done</>
+                    ) : (
+                      <>Onread</>
+                    )
+                  ) : (
+                    <>Read</>
+                  )}
                 </span>
               </div>
             </div>

@@ -58,9 +58,8 @@ export default function index() {
       inputElement.addEventListener("keydown", handleKeyPress);
     }
 
-    AddedBooks({ name: "Kathleen", id: 2 }).then((res) =>
-      setadded(res.data[0].Books)
-    );
+    //@ts-ignore
+    dispatch(AddBooked(Response.name, Response.id));
 
     Books({}).then((res) => {
       // console.log(res.data, "here");
@@ -74,11 +73,9 @@ export default function index() {
     };
   }, []);
 
-  const filteredProducts = data.filter(
-    (product: any, index: number) =>
-      product.title ===
-      AddedBook[Number(sessionStorage.getItem(`${index}-id`))]?.book
-  );
+  const filteredProducts =
+    AddedBook &&
+    AddedBook.filter((product: any, index: number) => product.status === 1);
 
   function Removed(datas: string, index: number) {
     console.log(Response.id, data, Response.name, "here");
@@ -96,7 +93,7 @@ export default function index() {
     );
     // console.log(index, "here");
   }
-  //   console.log(filteredProducts, data, AddedBook);
+  console.log(Response);
   return (
     <>
       <div className="h-full flex items-center flex-col gap-12">
@@ -104,56 +101,57 @@ export default function index() {
           Library
         </div>
         <div className="w-full h-full flex gap-y-8 flex-wrap gap-20 justify-center">
-          {AddedBook.map((data: any, index: number) => {
-            return (
-              <div
-                className="w-44 relative h-52 flex items-center flex-col group/item hover:bg-slate-100 ..."
-                key={index}
-              >
-                {/* {AddedBook[Number(sessionStorage.getItem(`${index}-id`))]
+          {filteredProducts &&
+            filteredProducts.map((data: any, index: number) => {
+              return (
+                <div
+                  className="w-44 relative h-52 flex items-center flex-col group/item hover:bg-slate-100 ..."
+                  key={index}
+                >
+                  {/* {AddedBook[Number(sessionStorage.getItem(`${index}-id`))]
                   ?.book === data.title ? (
                   <> */}
-                <div className="relative w-11/12 relative h-48">
-                  <Image
-                    src={data.image ? data.image : Bookstore}
-                    alt={data.title}
-                    sizes="(max-width: 100vw) 100vw"
-                    priority={true}
-                    fill
-                  />
-                </div>
-                {data.title}
-                <div
-                  className="group/edit invisible absolute w-full flex-col h-full flex justify-center items-center group-hover/item:visible ..."
-                  style={{ backgroundColor: "rgba(.5, .5, .5, .3)" }}
-                >
-                  <span
-                    className="group-hover/edit:text-gray-700 ..."
-                    style={{ cursor: "pointer", color: "blue" }}
-                    onClick={() => {
-                      Removed(data.book, data.idx);
-                    }}
+                  <div className="relative w-11/12 relative h-48">
+                    <Image
+                      src={data.image ? data.image : Bookstore}
+                      alt={data.title}
+                      sizes="(max-width: 100vw) 100vw"
+                      priority={true}
+                      fill
+                    />
+                  </div>
+                  {data.title}
+                  <div
+                    className="group/edit invisible absolute w-full flex-col h-full flex justify-center items-center group-hover/item:visible ..."
+                    style={{ backgroundColor: "rgba(.5, .5, .5, .3)" }}
                   >
-                    Removed
-                  </span>
-                  <span
-                    className="group-hover/edit:text-gray-700 ..."
-                    style={{ cursor: "pointer", color: "#fff" }}
-                    onClick={() => {
-                      router.push(`/read?Book=${data.title}&data=0`),
-                        dispatch(setChapter(data.chapter));
-                    }}
-                  >
-                    Read
-                  </span>
-                </div>
-                {/* </>
+                    <span
+                      className="group-hover/edit:text-gray-700 ..."
+                      style={{ cursor: "pointer", color: "blue" }}
+                      onClick={() => {
+                        Removed(data.book, data.idx);
+                      }}
+                    >
+                      Removed
+                    </span>
+                    <span
+                      className="group-hover/edit:text-gray-700 ..."
+                      style={{ cursor: "pointer", color: "#fff" }}
+                      onClick={() => {
+                        router.push(`/read?Book=${data.title}&data=0`),
+                          dispatch(setChapter(data.chapter));
+                      }}
+                    >
+                      Read
+                    </span>
+                  </div>
+                  {/* </>
                 ) : (
                   ""
                 )} */}
-              </div>
-            );
-          })}
+                </div>
+              );
+            })}
         </div>
       </div>
     </>

@@ -6,7 +6,12 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { text } from "@/utils/helpers";
 import { RootState } from "@/store";
-import { setModal, AddBooked } from "@/reducers/gameData";
+import {
+  setModal,
+  AddBooked,
+  setChapter,
+  setResponse,
+} from "@/reducers/gameData";
 import { useDispatch, useSelector } from "react-redux";
 
 function index(props: any) {
@@ -38,9 +43,11 @@ function index(props: any) {
           style={{ cursor: "pointer" }}
           onClick={() => {
             dispatch(setModal(1)),
-              sessionStorage.removeItem("data"),
+              sessionStorage.clear(),
               //@ts-ignore
               dispatch(AddBooked("", 0));
+            dispatch(setChapter([]));
+            dispatch(setResponse([]));
           }}
         >
           <div className="w-4 relative h-5">

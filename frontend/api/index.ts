@@ -82,3 +82,11 @@ export function AddBook(data: any) {
 export function RemoveBook(data: any) {
   return api("/remove_book", Post, data);
 }
+
+export function Onread(data: any) {
+  return api("/mark_as_onread", Post, data);
+}
+
+export function Done(data: any) {
+  return api("/mark_as_done", Post, data);
+}
