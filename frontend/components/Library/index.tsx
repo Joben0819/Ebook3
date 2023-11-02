@@ -74,17 +74,26 @@ export default function index() {
   }, []);
 
   const filteredProducts =
-    AddedBook &&
-    AddedBook.filter((product: any, index: number) => product.status === 1);
+    data &&
+    data.filter(
+      (product: any, index: number) =>
+        product.title ===
+        AddedBook[
+          sessionStorage.getItem(`${index}-id`)
+            ? Number(sessionStorage.getItem(`${index}-id`))
+            : ""
+        ]?.book
+    );
 
-  function Removed(datas: string, index: number) {
+  function Removed(datas: string) {
     console.log(Response.id, data, Response.name, "here");
     // const books = data.filter(
     //   (item: any) => item.title === AddedBook[index].book
     // );
+    const named = Number(sessionStorage.getItem(`title-${datas}`));
     RemoveBook({ id: Response.id, book: datas, name: Response.name }).then(
       (res) => {
-        sessionStorage.removeItem(`${index}-id`);
+        sessionStorage.removeItem(`${named}-id`);
 
         //@ts-ignore
         dispatch(AddBooked(Response.name, Response.id));
@@ -93,7 +102,7 @@ export default function index() {
     );
     // console.log(index, "here");
   }
-  console.log(Response);
+  console.log(filteredProducts, AddedBook);
   return (
     <>
       <div className="h-full flex items-center flex-col gap-12">
@@ -113,7 +122,7 @@ export default function index() {
                   <> */}
                   <div className="relative w-11/12 relative h-48">
                     <Image
-                      src={data.image ? data.image : Bookstore}
+                      src={data.base64img ? data.base64img : Bookstore}
                       alt={data.title}
                       sizes="(max-width: 100vw) 100vw"
                       priority={true}
@@ -129,7 +138,7 @@ export default function index() {
                       className="group-hover/edit:text-gray-700 ..."
                       style={{ cursor: "pointer", color: "blue" }}
                       onClick={() => {
-                        Removed(data.book, data.idx);
+                        Removed(data.title);
                       }}
                     >
                       Removed
@@ -138,8 +147,12 @@ export default function index() {
                       className="group-hover/edit:text-gray-700 ..."
                       style={{ cursor: "pointer", color: "#fff" }}
                       onClick={() => {
-                        router.push(`/read?Book=${data.title}&data=0`),
-                          dispatch(setChapter(data.chapter));
+                        router.push(
+                          `/read?Book=${data.title}&data=0&index=${Number(
+                            sessionStorage.getItem(`title-${data.title}`)
+                          )}`
+                        ),
+                          dispatch(setChapter(data));
                       }}
                     >
                       Read

@@ -86,7 +86,7 @@ function index() {
     // sessionStorage.getItem(`${1}-readonly`)
     //   ? Number(sessionStorage.getItem(`${1}-readonly`))
     //   : "",
-    Response.length === 0 ? 2 : Response,
+    Response.length === 0 ? 2 : AddedBook,
     "Response"
   );
 
@@ -96,9 +96,10 @@ function index() {
       id: Response.id,
       book: data,
       name: Response.name,
-      image: image,
+      image: !image ? "" : image,
       idx: index,
     }).then((res) => {
+      console.log(res);
       if (res.data.detail === "Added") {
         //@ts-ignore
         dispatch(AddBooked(Response.name, Response.id));
@@ -123,25 +124,26 @@ function index() {
 
   function Addition(title: string, data: number) {
     AddedBook &&
-      AddedBook.map((item: any, idx: number) =>
-        item.book === title
-          ? item.status === 1
-            ? sessionStorage.setItem(`${data}-id`, idx.toString())
-            : sessionStorage.setItem(`${data}-readonly`, idx.toString())
-          : ""
-      );
+      AddedBook.forEach((item: any, idx: any) => {
+        if (item.book === title) {
+          if (item.status === 1) {
+            sessionStorage.setItem(`${data}-id`, idx.toString());
+            sessionStorage.setItem(`${data}-id`, idx.toString());
+            sessionStorage.setItem(`title-${item.book}`, idx);
+            if (item.inread) {
+              sessionStorage.setItem(`${item.book}`, item.inread.toString());
+            }
+            console.log(item), "read";
+          } else {
+            sessionStorage.setItem(`${data}-readonly`, idx.toString());
+            if (item.inread) {
+              sessionStorage.setItem(`${item.book}`, item.inread.toString());
+            }
+            console.log(item, "read");
+          }
+        }
+      });
   }
-
-  useEffect(() => {
-    window.onbeforeunload = () => {
-      if (Response) {
-        dispatch(setModal(1));
-      }
-    };
-    return () => {
-      window.onbeforeunload = null;
-    };
-  }, []);
 
   return (
     <div className="flex w-full items-center h-[90] flex-col gap-12">
@@ -230,10 +232,20 @@ function index() {
                   style={{ cursor: "pointer", color: "#fff" }}
                   onClick={() => {
                     if (data.chapter) {
-                      router.push(
-                        `/read?Book=${data.title}&data=0&index=${index}`
-                      ),
-                        dispatch(setChapter(data));
+                      if (sessionStorage.getItem(`${data.title}`)) {
+                        router.push(
+                          `/read?Book=${
+                            data.title
+                          }&data=${sessionStorage.getItem(
+                            `${data.title}`
+                          )}&index=${index}`
+                        );
+                      } else {
+                        router.push(
+                          `/read?Book=${data.title}&data=0&index=${index}`
+                        );
+                      }
+                      dispatch(setChapter(data));
                     } else {
                       alert("No Story Yet");
                     }

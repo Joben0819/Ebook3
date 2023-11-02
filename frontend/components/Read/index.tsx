@@ -25,22 +25,8 @@ function index() {
       Book: params,
       num: Chapter.chapter[Number(number)],
     }).then((res) => settext(res.data.message));
-    Books({}).then((res) => setdata(res.data));
-  }, [number]);
-  const filteredProducts = data.filter(
-    (product: any) => product.title === params
-  );
-  const MapProducts = filteredProducts.map(
-    (product: any) => product.chapter[Number(number)]
-  );
-  // console.log(
-  //   // Chapter?.chapter?.length - 1,
-  //   // Number(number),
-  //   Chapter,
-  //   "there's"
-  // );
+    // Books({}).then((res) => setdata(res.data));
 
-  useEffect(() => {
     function handleScroll() {
       const distanceToBottom =
         document.documentElement.scrollHeight -
@@ -81,12 +67,14 @@ function index() {
         {text}
         <div className="flex w-full justify-between ">
           <Button
-            variant={Number(number) === 0 ? "secondary" : ""}
+            variant={Number(number) === 0 ? "secondary" : "default"}
             onClick={() => {
               if (Number(number) === 0) {
                 ("");
               } else {
-                router.push(`/read?Book=${params}&data=${Number(number) - 1}`);
+                router.push(
+                  `/read?Book=${params}&data=${Number(number) - 1}&index=${dex}`
+                );
               }
             }}
           >
@@ -94,7 +82,9 @@ function index() {
           </Button>
           <Button
             variant={
-              Number(number) === Chapter.chapter?.length - 1 ? "secondary" : ""
+              Number(number) === Chapter.chapter?.length - 1
+                ? "secondary"
+                : "default"
             }
             onClick={() => {
               if (Number(number) === Chapter.chapter?.length - 1) {
@@ -107,6 +97,7 @@ function index() {
                     image: Chapter.base64img,
                     name: Response.name,
                     idx: dex,
+                    inread: Number(number) + 1,
                   });
                 }
                 router.push(

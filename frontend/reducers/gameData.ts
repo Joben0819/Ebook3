@@ -79,11 +79,16 @@ export const AddBooked = (
 ): ThunkAction<void, RootState, null, AnyAction> => {
   return (dispatch) => {
     AddedBooks({ name, id }).then((res: any) => {
-      console.log(res, name, id);
+      console.log(res);
       if (res.data.data === "None") {
-        dispatch(setAddedBook([]));
+        sessionStorage.clear(), dispatch(setAddedBook([]));
+        dispatch(setChapter([]));
+        dispatch(setResponse([]));
+        dispatch(setModal(1)), console.log("here");
       } else {
-        dispatch(setAddedBook(res.data[0].Books));
+        console.log("there");
+        sessionStorage.setItem("data", "meron");
+        dispatch(setModal(3)), dispatch(setAddedBook(res.data[0].Books));
       }
     });
   };

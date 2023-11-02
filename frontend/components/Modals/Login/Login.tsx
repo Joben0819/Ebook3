@@ -44,11 +44,13 @@ export default function Login() {
           // console.log(res.data[0].id);
           const ids = res.data[0].id;
           //@ts-ignore
-          dispatch(AddBooked(name, ids));
+          // dispatch(AddBooked(name, ids));
           setTimeout(() => {
             setstate(false);
-            sessionStorage.setItem("data", "meron");
-            dispatch(setModal(3));
+            // sessionStorage.setItem("data", "meron");
+            // dispatch(setModal(3));
+            //@ts-ignore
+            dispatch(AddBooked(name, ids));
             dispatch(setResponse(res.data[0]));
           }, 400);
         }

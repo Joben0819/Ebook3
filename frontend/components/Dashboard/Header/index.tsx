@@ -15,22 +15,15 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 
 function index(props: any) {
-  const { Modal } = useSelector((state: RootState) => state.gameData);
+  const { Modal, Response } = useSelector((state: RootState) => state.gameData);
   const dispatch = useDispatch();
-  // useEffect(() => {
-  //   window.onbeforeunload = () => {
-  //     sessionStorage.setItem("data", "");
-  //   };
-
-  //   // Cleanup the event handler when the component unmounts
-  //   return () => {
-  //     window.onbeforeunload = null;
-  //   };
-  // }, []);
-
   const router = useRouter();
   const route = () => {
-    router.push("/Library");
+    if (Response.length !== 0) {
+      router.push("/Library");
+    } else {
+      dispatch(setModal(1));
+    }
   };
   const route2 = () => {
     router.push("/");
@@ -42,12 +35,12 @@ function index(props: any) {
           className="w-20 flex items-center gap-2 "
           style={{ cursor: "pointer" }}
           onClick={() => {
-            dispatch(setModal(1)),
-              sessionStorage.clear(),
-              //@ts-ignore
-              dispatch(AddBooked("", 0));
-            dispatch(setChapter([]));
-            dispatch(setResponse([]));
+            // dispatch(setModal(1)),
+            // sessionStorage.clear(),
+            //@ts-ignore
+            dispatch(AddBooked("", 0));
+            // dispatch(setChapter([]));
+            // dispatch(setResponse([]));
           }}
         >
           <div className="w-4 relative h-5">
