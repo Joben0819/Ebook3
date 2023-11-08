@@ -80,15 +80,15 @@ function index() {
 
   // const addedbooked = ;
 
-  console.log(
-    // AddedBook &&
-    //   AddedBook[Number(sessionStorage.getItem(`${1}-readonly`))]?.Done,
-    // sessionStorage.getItem(`${1}-readonly`)
-    //   ? Number(sessionStorage.getItem(`${1}-readonly`))
-    //   : "",
-    Response.length === 0 ? 2 : AddedBook,
-    "Response"
-  );
+  // console.log(
+  //   // AddedBook &&
+  //   //   AddedBook[Number(sessionStorage.getItem(`${1}-readonly`))]?.Done,
+  //   // sessionStorage.getItem(`${1}-readonly`)
+  //   //   ? Number(sessionStorage.getItem(`${1}-readonly`))
+  //   //   : "",
+  //   Response.length === 0 ? 2 : AddedBook,
+  //   "Response"
+  // );
 
   function Added(data: string, image: string, index: number) {
     // console.log(Response.id, data, Response.name, image, "here");
@@ -99,13 +99,15 @@ function index() {
       image: !image ? "" : image,
       idx: index,
     }).then((res) => {
-      console.log(res);
+      // console.log(res);
       if (res.data.detail === "Added") {
         //@ts-ignore
         dispatch(AddBooked(Response.name, Response.id));
         alert(res.data.detail);
       } else {
         alert(res.data.detail);
+        //@ts-ignore
+        dispatch(AddBooked(Response.name, Response.id));
       }
     });
   }
@@ -114,7 +116,7 @@ function index() {
     // console.log(Response.id, data, Response.name, "here");
     RemoveBook({ id: Response.id, book: data, name: Response.name }).then(
       (res) => {
-        sessionStorage.removeItem(`${index}-id`);
+        sessionStorage.removeItem(`title-${data}`);
         //@ts-ignore
         dispatch(AddBooked(Response.name, Response.id));
         alert(data);
@@ -127,23 +129,32 @@ function index() {
       AddedBook.forEach((item: any, idx: any) => {
         if (item.book === title) {
           if (item.status === 1) {
+            // sessionStorage.setItem(`${data}-id`, idx.toString());
             sessionStorage.setItem(`${data}-id`, idx.toString());
-            sessionStorage.setItem(`${data}-id`, idx.toString());
-            sessionStorage.setItem(`title-${item.book}`, idx);
-            if (item.inread) {
-              sessionStorage.setItem(`${item.book}`, item.inread.toString());
-            }
-            console.log(item), "read";
+            sessionStorage.setItem(`Library-${item.book}`, idx);
+            // if (item.inread) {
+            //   sessionStorage.setItem(`${item.book}`, item.inread.toString());
+            // }
           } else {
-            sessionStorage.setItem(`${data}-readonly`, idx.toString());
-            if (item.inread) {
-              sessionStorage.setItem(`${item.book}`, item.inread.toString());
-            }
-            console.log(item, "read");
+            // sessionStorage.setItem(`${data}-readonly`, idx.toString());
+            // sessionStorage.setItem(`title-${item.book}`, idx);
+            // if (item.inread) {
+            //   sessionStorage.setItem(`${item.book}`, item.inread.toString());
+            // }
           }
         }
+        sessionStorage.setItem(`title-${item.book}`, idx);
       });
   }
+
+  const InDex = (data: string) => {
+    const a = sessionStorage.getItem(`title-${data}`);
+    if (a) {
+      return a;
+    } else {
+      return "";
+    }
+  };
 
   return (
     <div className="flex w-full items-center h-[90] flex-col gap-12">
@@ -168,12 +179,7 @@ function index() {
               className="w-44 h-52 relative flex items-center flex-col group/item hover:bg-slate-100 ..."
               key={index}
             >
-              {AddedBook &&
-              AddedBook[
-                sessionStorage.getItem(`${index}-id`)
-                  ? Number(sessionStorage.getItem(`${index}-id`))
-                  : ""
-              ]?.status === 1 ? (
+              {AddedBook && AddedBook[InDex(data.title)]?.status === 1 ? (
                 <div className="absolute right-[10px] z-[1] top-[0] rounded-[10px] bg-green-500 h-[20px] w-[20px]"></div>
               ) : (
                 ""
@@ -192,12 +198,7 @@ function index() {
                 className="group/edit invisible absolute w-full flex-col h-full flex justify-center items-center group-hover/item:visible ..."
                 style={{ backgroundColor: "rgba(.5, .5, .5, .3)" }}
               >
-                {AddedBook &&
-                AddedBook[
-                  sessionStorage.getItem(`${index}-id`)
-                    ? Number(sessionStorage.getItem(`${index}-id`))
-                    : ""
-                ]?.book === data.title ? (
+                {AddedBook && AddedBook[InDex(data.title)]?.status === 1 ? (
                   <span
                     className="group-hover/edit:text-gray-700 ..."
                     style={{
@@ -234,10 +235,8 @@ function index() {
                     if (data.chapter) {
                       if (sessionStorage.getItem(`${data.title}`)) {
                         router.push(
-                          `/read?Book=${
+                          `/read?Book=${data.title}&data=${InDex(
                             data.title
-                          }&data=${sessionStorage.getItem(
-                            `${data.title}`
                           )}&index=${index}`
                         );
                       } else {
@@ -252,21 +251,8 @@ function index() {
                   }}
                 >
                   {AddedBook &&
-                  AddedBook[
-                    sessionStorage.getItem(`${index}-id`)
-                      ? Number(sessionStorage.getItem(`${index}-id`))
-                      : sessionStorage.getItem(`${index}-readonly`)
-                      ? Number(sessionStorage.getItem(`${index}-readonly`))
-                      : ""
-                  ]?.onread === true ? (
-                    AddedBook &&
-                    AddedBook[
-                      sessionStorage.getItem(`${index}-id`)
-                        ? Number(sessionStorage.getItem(`${index}-id`))
-                        : sessionStorage.getItem(`${index}-readonly`)
-                        ? Number(sessionStorage.getItem(`${index}-readonly`))
-                        : ""
-                    ]?.Done === true ? (
+                  AddedBook[InDex(data.title)]?.onread === true ? (
+                    AddedBook && AddedBook[InDex(data.title)]?.Done === true ? (
                       <>Done</>
                     ) : (
                       <>Onread</>

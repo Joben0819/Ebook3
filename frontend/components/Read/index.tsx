@@ -27,13 +27,16 @@ function index() {
     }).then((res) => settext(res.data.message));
     // Books({}).then((res) => setdata(res.data));
 
+    const hgt = document.getElementById("story") as HTMLElement;
+    const innerhgt = hgt?.clientHeight;
+    console.log(hgt?.clientHeight, "this");
+
     function handleScroll() {
       const distanceToBottom =
         document.documentElement.scrollHeight -
         (window.scrollY + window.innerHeight);
 
-      const threshold = 100;
-
+      const threshold = 1000;
       if (distanceToBottom < threshold) {
         if (
           Number(number) === Chapter.chapter?.length - 1 &&
@@ -41,30 +44,42 @@ function index() {
         ) {
           Done({ id: Response.id, book: Chapter.title });
           console.log("Done");
-        } else {
         }
       }
+      console.log("here");
     }
-
-    window.addEventListener("scroll", handleScroll);
+    if (Number(innerhgt) > window.innerHeight) {
+      window.addEventListener("scroll", handleScroll);
+    } else {
+      if (
+        Number(number) === Chapter.chapter?.length - 1 &&
+        Response.length !== 0
+      ) {
+        Done({ id: Response.id, book: Chapter.title });
+        console.log("Done2");
+      }
+    }
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [number, Chapter]);
+  }, [number, Chapter, text]);
+
+  // console.log(Response);
 
   return (
     <>
-      <div
+      <Button
         onClick={() => router.push(`/`)}
         className="ml-[2rem] cursor-pointer"
         id="element"
       >
         Back
-      </div>
+      </Button>
       <div className="text-center p-[3rem]">
         <h1 className="text-[1.5rem]">{Chapter.chapter[Number(number)]}</h1>
-        {text}
+        <div id="story">{text}</div>
+
         <div className="flex w-full justify-between ">
           <Button
             variant={Number(number) === 0 ? "secondary" : "default"}

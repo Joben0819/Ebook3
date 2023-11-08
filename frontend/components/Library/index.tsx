@@ -79,8 +79,8 @@ export default function index() {
       (product: any, index: number) =>
         product.title ===
         AddedBook[
-          sessionStorage.getItem(`${index}-id`)
-            ? Number(sessionStorage.getItem(`${index}-id`))
+          sessionStorage.getItem(`Library-${product.title}`)
+            ? Number(sessionStorage.getItem(`Library-${product.title}`))
             : ""
         ]?.book
     );
@@ -102,7 +102,7 @@ export default function index() {
     );
     // console.log(index, "here");
   }
-  console.log(filteredProducts, AddedBook);
+  console.log(filteredProducts, AddedBook, "here");
   return (
     <>
       <div className="h-full flex items-center flex-col gap-12">

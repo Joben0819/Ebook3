@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { setModal } from "@/reducers/gameData";
+import { setModal, setResponse, AddBooked } from "@/reducers/gameData";
 import { useDispatch, useSelector } from "react-redux";
 import { Registered } from "@/api";
 
@@ -22,18 +22,24 @@ export default function Register() {
 
   const Log = () => {
     Registered({ name: name, password: password }).then((res) => {
+      // console.log(res.data[0].id, "register");
       if (res.status === 200) {
         if (res.data.message === "null") {
           setstate(true);
           setTimeout(() => {
             setstate(false);
-            alert("Wrong passcode");
+            alert("Already Existed");
           }, 800);
         } else {
           setstate(true);
+          const ids = res.data[0].id;
           setTimeout(() => {
             setstate(false);
-            dispatch(setModal(1));
+            sessionStorage.setItem("data", "meron");
+            dispatch(setModal(3)),
+              //@ts-ignore
+              dispatch(AddBooked(name, ids));
+            dispatch(setResponse(res.data[0]));
           }, 800);
         }
       } else {

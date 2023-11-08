@@ -47,10 +47,10 @@ export default function Login() {
           // dispatch(AddBooked(name, ids));
           setTimeout(() => {
             setstate(false);
-            // sessionStorage.setItem("data", "meron");
-            // dispatch(setModal(3));
-            //@ts-ignore
-            dispatch(AddBooked(name, ids));
+            sessionStorage.setItem("data", "meron");
+            dispatch(setModal(3)),
+              //@ts-ignore
+              dispatch(AddBooked(name, ids));
             dispatch(setResponse(res.data[0]));
           }, 400);
         }

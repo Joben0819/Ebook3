@@ -11,6 +11,7 @@ import {
   AddBooked,
   setChapter,
   setResponse,
+  setAddedBook,
 } from "@/reducers/gameData";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -28,6 +29,7 @@ function index(props: any) {
   const route2 = () => {
     router.push("/");
   };
+  // console.log(Response, "Response");
   return (
     <div className="flex w-full pl-10 gap-5 h-[10%] items-center">
       {sessionStorage.getItem("data") && (
@@ -35,12 +37,13 @@ function index(props: any) {
           className="w-20 flex items-center gap-2 "
           style={{ cursor: "pointer" }}
           onClick={() => {
-            // dispatch(setModal(1)),
-            // sessionStorage.clear(),
-            //@ts-ignore
-            dispatch(AddBooked("", 0));
-            // dispatch(setChapter([]));
-            // dispatch(setResponse([]));
+            sessionStorage.clear(),
+              dispatch(setModal(1)),
+              //@ts-ignore
+              dispatch(AddBooked("", 0));
+            dispatch(setChapter([]));
+            dispatch(setResponse([]));
+            dispatch(setAddedBook([]));
           }}
         >
           <div className="w-4 relative h-5">
