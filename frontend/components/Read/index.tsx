@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { ReadFile, Books, Onread, Done } from "@/api";
+import { Books, Onread, Done } from "@/api";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
@@ -11,9 +11,9 @@ function index() {
   const [data, setdata] = useState<any>([]);
   const [text, settext] = useState("");
   const searchParams = useSearchParams();
-  const params = searchParams.get("Book");
+  const params = searchParams.get("Book") || "";
   const dex = searchParams.get("index");
-  const number = !searchParams.get("data") ? 0 : searchParams.get("data");
+  const number = searchParams.get("data") || 0;
   const router = useRouter();
   // console.log(Number(number), "here");
   const { Chapter, Response } = useSelector(
@@ -21,15 +21,15 @@ function index() {
   );
 
   useEffect(() => {
-    ReadFile({
-      Book: params,
-      num: Chapter.chapter[Number(number)],
-    }).then((res) => settext(res.data.message));
+    // ReadFile({
+    //   num: Chapter.chapter[Number(number)],
+    //   Book: params,
+    // }).then((res) => settext(res.data.message));
     // Books({}).then((res) => setdata(res.data));
 
     const hgt = document.getElementById("story") as HTMLElement;
     const innerhgt = hgt?.clientHeight;
-    console.log(hgt?.clientHeight, "this");
+    // console.log(hgt?.clientHeight, "this");
 
     function handleScroll() {
       const distanceToBottom =
@@ -42,11 +42,11 @@ function index() {
           Number(number) === Chapter.chapter?.length - 1 &&
           Response.length !== 0
         ) {
-          Done({ id: Response.id, book: Chapter.title });
+          Done({ id: Response.id, book: Chapter.filename });
           console.log("Done");
         }
       }
-      console.log("here");
+      // console.log("here");
     }
     if (Number(innerhgt) > window.innerHeight) {
       window.addEventListener("scroll", handleScroll);
@@ -55,7 +55,7 @@ function index() {
         Number(number) === Chapter.chapter?.length - 1 &&
         Response.length !== 0
       ) {
-        Done({ id: Response.id, book: Chapter.title });
+        Done({ id: Response.id, book: Chapter.filename });
         console.log("Done2");
       }
     }
@@ -63,7 +63,7 @@ function index() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [number, Chapter, text]);
+  }, [number, Chapter]);
 
   // console.log(Response);
 
@@ -77,8 +77,10 @@ function index() {
         Back
       </Button>
       <div className="text-center p-[3rem]">
-        <h1 className="text-[1.5rem]">{Chapter.chapter[Number(number)]}</h1>
-        <div id="story">{text}</div>
+        <h1 className="text-[1.5rem]">
+          {Chapter.chapter[Number(number)]?.title}
+        </h1>
+        <div id="story">{Chapter.chapter[Number(number)]?.content}</div>
 
         <div className="flex w-full justify-between ">
           <Button
@@ -108,10 +110,10 @@ function index() {
                 if (Response.length !== 0) {
                   Onread({
                     id: Response.id,
-                    book: Chapter.title,
-                    image: Chapter.base64img,
+                    book: Chapter.filename,
+                    image: Chapter.image,
                     name: Response.name,
-                    idx: dex,
+                    idx: Number(dex),
                     inread: Number(number) + 1,
                   });
                 }

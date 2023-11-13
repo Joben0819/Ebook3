@@ -1,25 +1,30 @@
 import { AnyAction, createSlice, ThunkAction } from "@reduxjs/toolkit";
 import { RootState } from "@/store";
-import { AddedBooks } from "@/api";
+import { AddedBooks, Authored } from "@/api";
+import { Authors } from "@/api/type";
 
 export interface GameDataState {
   theme: string;
   eventSignInPopup: any;
   Navbar: number;
+  Navbar2: number;
   Modal: number;
   Response: any;
   Chapter: any;
   Userdata: any;
   AddedBook: any;
+  Author: Authors | "";
 }
 const initialState: GameDataState = {
   theme: "default",
   Navbar: 1,
+  Navbar2: 1,
   Modal: 1,
   Response: [],
   Chapter: [],
   Userdata: [],
   AddedBook: [],
+  Author: "",
 
   eventSignInPopup: {},
 };
@@ -36,6 +41,9 @@ const gameDataSlice = createSlice({
     setNavbar: (state, action) => {
       state.Navbar = action.payload;
     },
+    setNavbar2: (state, action) => {
+      state.Navbar2 = action.payload;
+    },
     setModal: (state, action) => {
       state.Modal = action.payload;
     },
@@ -50,6 +58,9 @@ const gameDataSlice = createSlice({
     },
     setAddedBook: (state, action) => {
       state.AddedBook = action.payload;
+    },
+    setAuthor: (state, action) => {
+      state.Author = action.payload;
     },
   },
 });
@@ -66,10 +77,12 @@ export const {
   setEventSignInPopup,
   setModal,
   setNavbar,
+  setNavbar2,
   setResponse,
   setChapter,
   setUserdata,
   setAddedBook,
+  setAuthor,
 } = gameDataSlice.actions;
 export default gameDataSlice.reducer;
 
@@ -80,15 +93,19 @@ export const AddBooked = (
   return (dispatch) => {
     AddedBooks({ name, id }).then((res: any) => {
       // console.log(res);
-      if (res.data.data === "None") {
-        // dispatch(setAddedBook([]));
-        // dispatch(setChapter([]));
-        // dispatch(setResponse([]));
-        // console.log("here");
-      } else {
-        // console.log("there");
-        dispatch(setAddedBook(res.data[0].Books));
-      }
+      dispatch(setAddedBook(res?.data[0]?.Books));
+    });
+  };
+};
+
+export const Authoreds = (
+  name: string
+): ThunkAction<void, RootState, null, AnyAction> => {
+  return (dispatch) => {
+    console.log("name");
+    Authored({ username: name }).then((res: any) => {
+      // console.log(res);
+      dispatch(setAuthor(res.data.username));
     });
   };
 };

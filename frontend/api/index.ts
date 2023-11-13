@@ -1,4 +1,20 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import {
+  Login,
+  Register,
+  Book,
+  Upload,
+  ReadFiled,
+  CreateFiled,
+  AddedBook,
+  AddBooks,
+  RemovedBook,
+  OnRead,
+  OnDone,
+  OnWriter,
+  Authors,
+} from "./type";
+
 export const Domain = "http://127.0.0.1:8000";
 
 var Post = "POST";
@@ -14,12 +30,21 @@ export const api = async (
   method: string,
   data: any
 ): Promise<any> => {
+  let Content = "";
+  let json = true;
+  if (data instanceof FormData) {
+    Content = "multipart/form-data";
+    json = false;
+  } else {
+    Content = "application/json;charset=UTF-8";
+    json = true;
+  }
   const url = Domain + param;
   var globalHeaders = {
     "front-host": url,
-    dev: 2,
-    version: 2,
-    "Content-Type": "application/json;charset=UTF-8",
+    // dev: 2,
+    // version: 2,
+    "Content-Type": Content,
   };
   try {
     const axiosConfig: AxiosRequestConfig = {
@@ -27,11 +52,11 @@ export const api = async (
       url: url,
       headers: {
         "front-host": globalHeaders["front-host"],
-        dev: globalHeaders.dev.toString(),
-        version: globalHeaders.version.toString(),
+        // dev: globalHeaders.dev.toString(),
+        // version: globalHeaders.version.toString(),
         "Content-Type": globalHeaders["Content-Type"],
       },
-      data: JSON.stringify(data),
+      data: json === true ? JSON.stringify(data) : data,
       // withCredentials: true,
     };
 
@@ -47,46 +72,57 @@ export const api = async (
   }
 };
 
-export function Registered(data: any) {
+export function Registered(data: Login) {
   return api("/register", Post, data);
 }
 
-export function login(data: any) {
+export function login(data: Register) {
   return api("/login", Post, data);
 }
 
-export function Books(data: any) {
+export function Books(data: Book) {
   return api("/get_data/", Get, data);
 }
 
-export function Createfolder(data: any) {
-  return api("/create_folder", Post, data);
+export function UploadFile(data: Upload) {
+  var formData = new FormData();
+  formData.append("filename", data.filename);
+  formData.append("file", data.file ?? "");
+  return api("/UploadFile", Post, formData);
 }
 
-export function ReadFile(data: any) {
-  return api("/read_file", Post, data);
-}
+// export function ReadFile(data: ReadFiled) {
+//   return api("/read_file", Post, data);
+// }
 
-export function CreateFile(data: any) {
+export function CreateFile(data: CreateFiled) {
   return api("/create_text_file", Post, data);
 }
 
-export function AddedBooks(data: any) {
+export function AddedBooks(data: AddedBook) {
   return api("/Added_books", Post, data);
 }
 
-export function AddBook(data: any) {
+export function AddBook(data: AddBooks) {
   return api("/add_book", Post, data);
 }
 
-export function RemoveBook(data: any) {
+export function RemoveBook(data: RemovedBook) {
   return api("/remove_book", Post, data);
 }
 
-export function Onread(data: any) {
+export function Onread(data: OnRead) {
   return api("/mark_as_onread", Post, data);
 }
 
-export function Done(data: any) {
+export function Done(data: OnDone) {
   return api("/mark_as_done", Post, data);
+}
+
+export function Writers(data: OnWriter) {
+  return api("/writer", Post, data);
+}
+
+export function Authored(data: Authors) {
+  return api("/author", Post, data);
 }

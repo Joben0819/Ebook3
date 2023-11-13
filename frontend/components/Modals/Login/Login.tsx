@@ -12,7 +12,12 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { RootState } from "@/store";
-import { setModal, setResponse, AddBooked } from "@/reducers/gameData";
+import {
+  setModal,
+  setResponse,
+  AddBooked,
+  Authoreds,
+} from "@/reducers/gameData";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "@/api";
 export default function Login() {
@@ -32,6 +37,7 @@ export default function Login() {
   const { Modal, Response } = useSelector((state: RootState) => state.gameData);
   const Log = () => {
     login({ name: name, password: password }).then((res) => {
+      // console.log(res, "here");
       if (res.status === 200) {
         if (res.data.data === "null") {
           setstate(true);
@@ -42,7 +48,7 @@ export default function Login() {
         } else {
           setstate(true);
           // console.log(res.data[0].id);
-          const ids = res.data[0].id;
+          const ids = res.data.id;
           //@ts-ignore
           // dispatch(AddBooked(name, ids));
           setTimeout(() => {
@@ -51,7 +57,9 @@ export default function Login() {
             dispatch(setModal(3)),
               //@ts-ignore
               dispatch(AddBooked(name, ids));
-            dispatch(setResponse(res.data[0]));
+            dispatch(setResponse(res.data));
+            //@ts-ignore
+            dispatch(Authoreds(name));
           }, 400);
         }
       } else {

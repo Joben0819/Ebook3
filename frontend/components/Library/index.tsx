@@ -1,45 +1,70 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { AddedBooks, Books, RemoveBook } from "@/api";
+import { Writers, Books, RemoveBook } from "@/api";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
-import { setChapter, AddBooked } from "@/reducers/gameData";
+import { setChapter, AddBooked, Authoreds } from "@/reducers/gameData";
 import { useRouter } from "next/navigation";
 import Bookstore from "@/assets/Books/Library.png";
 import { RootState } from "@/store";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+
+const formSchema = z.object({
+  address: z.string().min(5, {
+    message: "Address must be at least 2 characters.",
+  }),
+  Fullname: z.string().min(5, {
+    message: "Fullname must be at least 2 characters.",
+  }),
+  Phonenumber: z.string().min(5, {
+    message: "Phonenumber must be at least 2 characters.",
+  }),
+  id: z.number(),
+  status: z.number(),
+  username: z.string(),
+});
+
+export interface Artwork {
+  artist: string;
+  art: string;
+}
+
+export const worked: Artwork[] = [
+  {
+    artist: "Ornella Binni",
+    art: "https://images.unsplash.com/photo-1465869185982-5a1a7522cbcb?auto=format&fit=crop&w=300&q=80",
+  },
+  {
+    artist: "Tom Byrom",
+    art: "https://images.unsplash.com/photo-1548516173-3cabfa4607e9?auto=format&fit=crop&w=300&q=80",
+  },
+  {
+    artist: "Vladimir Malyavko",
+    art: "https://images.unsplash.com/photo-1494337480532-3725c85fd2ab?auto=format&fit=crop&w=300&q=80",
+  },
+];
 
 export default function index() {
-  const sample = [
-    {
-      image: "https://www.gutenberg.org/cache/epub/345/pg345.cover.medium.jpg",
-      title: "Dracula",
-    },
-    {
-      image:
-        "https://www.gutenberg.org/cache/epub/47960/pg47960.cover.medium.jpg",
-      title: "Romeo and Juliet",
-    },
-    {
-      image:
-        "https://www.gutenberg.org/cache/epub/10830/pg10830.cover.medium.jpg",
-      title: "Cinderella",
-    },
-    {
-      image: "https://www.gutenberg.org/cache/epub/15/pg15.cover.medium.jpg",
-      title: "Moby Dick",
-    },
-    {
-      image:
-        "https://www.gutenberg.org/cache/epub/29447/pg29447.cover.medium.jpg",
-      title: "Perez the mouse",
-    },
-  ];
   const [part, separt] = useState<any | null>("");
-  const [added, setadded] = useState<any>([]);
   const [data, setdata] = useState<any>([]);
+  const [forms, setform] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter();
-  const { Response, AddedBook } = useSelector(
+  const { Response, AddedBook, Author } = useSelector(
     (state: RootState) => state.gameData
   );
 
@@ -62,7 +87,6 @@ export default function index() {
     dispatch(AddBooked(Response.name, Response.id));
 
     Books({}).then((res) => {
-      // console.log(res.data, "here");
       setdata(res.data);
     });
 
@@ -73,98 +97,235 @@ export default function index() {
     };
   }, []);
 
-  const filteredProducts =
-    data &&
-    data.filter(
-      (product: any, index: number) =>
-        product.title ===
-        AddedBook[
-          sessionStorage.getItem(`Library-${product.title}`)
-            ? Number(sessionStorage.getItem(`Library-${product.title}`))
-            : ""
-        ]?.book
-    );
+  const InDex = (data: string) => {
+    const a = sessionStorage.getItem(`Library-${data}`);
+    if (a) {
+      return a;
+    } else {
+      return "";
+    }
+  };
+
+  const filteredProducts = part
+    ? data.filter((product: any) => product.filename === part)
+    : data &&
+      data?.filter(
+        (product: any) =>
+          product.filename ===
+          (AddedBook && AddedBook[InDex(product.filename)]?.book)
+      );
 
   function Removed(datas: string) {
-    console.log(Response.id, data, Response.name, "here");
-    // const books = data.filter(
-    //   (item: any) => item.title === AddedBook[index].book
-    // );
-    const named = Number(sessionStorage.getItem(`title-${datas}`));
     RemoveBook({ id: Response.id, book: datas, name: Response.name }).then(
       (res) => {
-        sessionStorage.removeItem(`${named}-id`);
-
+        sessionStorage.removeItem(`Library-${datas}`);
         //@ts-ignore
         dispatch(AddBooked(Response.name, Response.id));
         alert("wala");
       }
     );
-    // console.log(index, "here");
   }
-  console.log(filteredProducts, AddedBook, "here");
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      address: "",
+      Fullname: "",
+      Phonenumber: "",
+      id: Response.id,
+      username: Response.name,
+      status: 2,
+    },
+  });
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    Writers(values).then((res) => {
+      if (res.data.detail === "Congratulation") {
+        alert(res.data.detail);
+        //@ts-ignore
+        dispatch(Authoreds(Response.name));
+        setform(false);
+      } else {
+        alert(res.data.detail);
+      }
+    });
+  }
+  // console.log(Author, Response, "Authors");
   return (
     <>
-      <div className="h-full flex items-center flex-col gap-12">
+      <div className="h-full flex items-center flex-col  ">
+        <div className="text-green-500 flex w-full px-[2.5rem] items-center gap-[1rem]">
+          {Author !== Response.name && (
+            <span className="cursor-pointer" onClick={() => setform(true)}>
+              Become A Writer
+            </span>
+          )}
+          {/* <div className="h-[3px] w-[1rem] bg-green-200 arrow"></div> */}
+        </div>
         <div className="w-full" style={{ textAlign: "center" }}>
           Library
         </div>
-        <div className="w-full h-full flex gap-y-8 flex-wrap gap-20 justify-center">
-          {filteredProducts &&
-            filteredProducts.map((data: any, index: number) => {
-              return (
-                <div
-                  className="w-44 relative h-52 flex items-center flex-col group/item hover:bg-slate-100 ..."
-                  key={index}
-                >
-                  {/* {AddedBook[Number(sessionStorage.getItem(`${index}-id`))]
-                  ?.book === data.title ? (
-                  <> */}
-                  <div className="relative w-11/12 relative h-48">
+        <div className="w-full h-[50%] flex gap-y-8 flex-wrap gap-20 justify-center">
+          <ScrollArea className="w-full whitespace-nowrap rounded-md border">
+            <div className="flex w-max space-x-4 p-4">
+              {filteredProducts &&
+                filteredProducts.map((data: any, index: number) => {
+                  return (
+                    <div
+                      className="w-44 relative h-52 flex items-center flex-col group/item hover:bg-slate-100 ..."
+                      key={index}
+                    >
+                      <div className="relative w-11/12 relative h-48">
+                        <Image
+                          src={data.image ? data.image : Bookstore}
+                          alt={data.filename}
+                          sizes="(max-width: 100vw) 100vw"
+                          priority={true}
+                          fill
+                        />
+                      </div>
+                      {data.filename}
+                      <div
+                        className="group/edit invisible absolute w-full flex-col h-full flex justify-center items-center group-hover/item:visible ..."
+                        style={{ backgroundColor: "rgba(.5, .5, .5, .3)" }}
+                      >
+                        <span
+                          className="group-hover/edit:text-gray-700 ..."
+                          style={{ cursor: "pointer", color: "blue" }}
+                          onClick={() => {
+                            Removed(data.filename);
+                          }}
+                        >
+                          Removed
+                        </span>
+                        <span
+                          className="group-hover/edit:text-gray-700 ..."
+                          style={{ cursor: "pointer", color: "#fff" }}
+                          onClick={() => {
+                            router.push(
+                              `/read?Book=${
+                                data.filename
+                              }&data=0&index=${Number(
+                                sessionStorage.getItem(`title-${data.title}`)
+                              )}`
+                            ),
+                              dispatch(setChapter(data));
+                          }}
+                        >
+                          {AddedBook &&
+                          AddedBook[InDex(data.filename)]?.onread === true ? (
+                            AddedBook &&
+                            AddedBook[InDex(data.filename)]?.Done === true ? (
+                              <>Done</>
+                            ) : (
+                              <>Onread</>
+                            )
+                          ) : (
+                            <>Read</>
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              {/* {worked.map((artwork) => (
+                <figure key={artwork.artist} className="shrink-0">
+                  <div className="overflow-hidden rounded-md">
                     <Image
-                      src={data.base64img ? data.base64img : Bookstore}
-                      alt={data.title}
-                      sizes="(max-width: 100vw) 100vw"
-                      priority={true}
-                      fill
+                      src={artwork.art}
+                      alt={`Photo by ${artwork.artist}`}
+                      className="aspect-[3/4] h-fit w-fit object-cover"
+                      width={300}
+                      height={400}
                     />
                   </div>
-                  {data.title}
+                  <figcaption className="pt-2 text-xs text-muted-foreground">
+                    Photo by{" "}
+                    <span className="font-semibold text-foreground">
+                      {artwork.artist}
+                    </span>
+                  </figcaption>
+                </figure>
+              ))} */}
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+          <div className="w-full h-[8rem] bg-green-200 flex justify-evenly">
+            <div>favorite</div>
+            <div>Read</div>
+            <div>Done</div>
+          </div>
+          {forms ? (
+            <div
+              className="fixed w-full h-full justify-center flex items-center"
+              style={{ top: "0", backgroundColor: "rgba(.5, .5, .5, .5)" }}
+            >
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-8 w-[50%] bg-white p-[1rem] relative"
+                >
                   <div
-                    className="group/edit invisible absolute w-full flex-col h-full flex justify-center items-center group-hover/item:visible ..."
-                    style={{ backgroundColor: "rgba(.5, .5, .5, .3)" }}
+                    className="absolute cursor-pointer"
+                    style={{ top: "8px", right: "16px" }}
+                    onClick={() => setform(false)}
                   >
-                    <span
-                      className="group-hover/edit:text-gray-700 ..."
-                      style={{ cursor: "pointer", color: "blue" }}
-                      onClick={() => {
-                        Removed(data.title);
-                      }}
-                    >
-                      Removed
-                    </span>
-                    <span
-                      className="group-hover/edit:text-gray-700 ..."
-                      style={{ cursor: "pointer", color: "#fff" }}
-                      onClick={() => {
-                        router.push(
-                          `/read?Book=${data.title}&data=0&index=${Number(
-                            sessionStorage.getItem(`title-${data.title}`)
-                          )}`
-                        ),
-                          dispatch(setChapter(data));
-                      }}
-                    >
-                      Read
-                    </span>
+                    x
                   </div>
-                  {/* </>
-                ) : (
-                  ""
-                )} */}
-                </div>
-              );
-            })}
+
+                  <FormField
+                    control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Address</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Address" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          This is your public display name.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="Fullname"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Fullname</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Fullname" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          This is your public display name.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="Phonenumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>PhoneNumber</FormLabel>
+                        <FormControl>
+                          <Input placeholder="PhoneNumber" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          This is your public display name.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit">Submit</Button>
+                </form>
+              </Form>
+            </div>
+          ) : (
+            ""
+          )}
         </div>
       </div>
     </>

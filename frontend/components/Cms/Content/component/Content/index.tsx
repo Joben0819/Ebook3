@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import axios from "axios";
-import { CreateFile, ReadFile, Books } from "@/api";
+import { CreateFile, Books } from "@/api";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +18,7 @@ function index() {
   const [modal, setmodal] = useState(false);
   const [book, setbook] = useState<any>([]);
   const [title, settitle] = useState("");
-  const [chapt, setchapt] = useState<string>("0");
+  const [chapt, setchapt] = useState<string>("");
   const [title2, settitle2] = useState<string>("");
   const [position, setPosition] = React.useState("0");
   function Added() {
@@ -40,7 +40,7 @@ function index() {
         Book: val1,
         text_content: val2,
       }).then((res) => {
-        if (res.data.status === true) {
+        if (res.data.status === "Added") {
           setmodal(false);
         } else {
           alert(res.data.Message);
@@ -49,17 +49,12 @@ function index() {
     }
   }
   useEffect(() => {
-    ReadFile({
-      num: `${chapt}`,
-      Book: title,
-    }).then((res) => {
-      setdata(res.data.message);
-    });
     Books({}).then((res) => {
       setbook(res.data);
     });
   }, [chapt, title]);
-  const filteredData = book.filter((item: any) => item.title === title);
+  const filteredData = book.filter((item: any) => item.filename === title);
+
   return (
     <>
       <div className="w-full bg-cyan-700">
@@ -79,23 +74,23 @@ function index() {
                 value={position}
                 onValueChange={setPosition}
               >
-                {filteredData.map((item: any, index: string) => {
+                {filteredData?.map((item: any, index: string) => {
                   return (
-                    <>
+                    <div key={item.id}>
                       {item?.chapter?.map((data: any, idx: any) => {
                         return (
                           <DropdownMenuRadioItem
                             value={idx}
                             key={idx}
                             onClick={() => {
-                              setchapt(data), settitle2(data);
+                              setchapt(data.content), settitle2(data.title);
                             }}
                           >
-                            {data}
+                            {data.title}
                           </DropdownMenuRadioItem>
                         );
                       })}
-                    </>
+                    </div>
                   );
                 })}
               </DropdownMenuRadioGroup>
@@ -111,7 +106,7 @@ function index() {
         </div>
         <div className="flex h-5/6 flex-col items-center overflow-y-auto p-5 leading-loose">
           <h1 className="text-xl font-bold"> {title2}</h1>
-          {data}
+          {chapt}
         </div>
       </div>
       {modal === true ? (
