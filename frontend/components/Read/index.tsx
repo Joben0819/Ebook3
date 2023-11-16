@@ -65,12 +65,12 @@ function index() {
     };
   }, [number, Chapter]);
 
-  // console.log(Response);
-
+  console.log(Response, Chapter);
+  const Href = sessionStorage.getItem("href");
   return (
     <>
       <Button
-        onClick={() => router.push(`/`)}
+        onClick={() => router.push(`${Href}`)}
         className="ml-[2rem] cursor-pointer"
         id="element"
       >

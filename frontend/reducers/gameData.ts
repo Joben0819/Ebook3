@@ -92,8 +92,12 @@ export const AddBooked = (
 ): ThunkAction<void, RootState, null, AnyAction> => {
   return (dispatch) => {
     AddedBooks({ name, id }).then((res: any) => {
-      // console.log(res);
-      dispatch(setAddedBook(res?.data[0]?.Books));
+      if (res.data.data === "None") {
+        dispatch(setAddedBook([]));
+      } else {
+        // console.log(res);
+        dispatch(setAddedBook(res?.data[0]?.Books));
+      }
     });
   };
 };

@@ -11,6 +11,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
+import Heart from "@/public/heart.png";
+import Book from "@/public/open-book.png";
+import Check from "@/public/check-mark.png";
 import {
   Form,
   FormControl,
@@ -106,13 +109,28 @@ export default function index() {
     }
   };
 
+  function Filtered(data: any) {
+    const favorite = AddedBook.filter((item: any) => item.status === data);
+    return favorite;
+  }
+
+  console.log(data?.filter((product: any, index: number) => AddedBook[index]));
+
+  const favorite = AddedBook.filter((item: any) =>
+    item.status === 1 ? item.length : ""
+  );
+  const Onread = AddedBook.filter((item: any) =>
+    item.inread !== 0 ? item.length : ""
+  );
+  const OnDone = AddedBook.filter((item: any) =>
+    item.Done === true ? item.length : ""
+  );
   const filteredProducts = part
     ? data.filter((product: any) => product.filename === part)
     : data &&
       data?.filter(
-        (product: any) =>
-          product.filename ===
-          (AddedBook && AddedBook[InDex(product.filename)]?.book)
+        (product: any, index: number) =>
+          product.filename === Filtered(1)[index]?.book
       );
 
   function Removed(datas: string) {
@@ -148,7 +166,9 @@ export default function index() {
       }
     });
   }
-  // console.log(Author, Response, "Authors");
+
+  // console.log(favorite,On);
+
   return (
     <>
       <div className="h-full flex items-center flex-col  ">
@@ -204,7 +224,7 @@ export default function index() {
                               `/read?Book=${
                                 data.filename
                               }&data=0&index=${Number(
-                                sessionStorage.getItem(`title-${data.title}`)
+                                sessionStorage.getItem(`title-${data.filename}`)
                               )}`
                             ),
                               dispatch(setChapter(data));
@@ -248,10 +268,19 @@ export default function index() {
             </div>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
-          <div className="w-full h-[8rem] bg-green-200 flex justify-evenly">
-            <div>favorite</div>
-            <div>Read</div>
-            <div>Done</div>
+          <div className="w-full h-[10rem] bg-green-200 flex justify-evenly">
+            <div className="flex items-center flex-col justify-center">
+              <Image src={Heart} alt="heart" width="100" height="100" />
+              <span>favorite</span>
+            </div>
+            <div className="flex items-center flex-col justify-center">
+              <Image src={Book} alt="heart" width="100" height="100" />
+              <span>Read</span>
+            </div>
+            <div className="flex items-center flex-col justify-center">
+              <Image src={Check} alt="heart" width="100" height="100" />
+              <span>Done</span>
+            </div>
           </div>
           {forms ? (
             <div

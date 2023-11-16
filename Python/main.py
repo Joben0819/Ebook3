@@ -1,5 +1,5 @@
 # import sys
-from fastapi import Depends, FastAPI, Header, Request, File, UploadFile, Form, HTTPException
+from fastapi import Depends, FastAPI, Header, Request, File, UploadFile, Form, HTTPException, Query
 from pymongo import MongoClient
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.security import OAuth2PasswordBearer
@@ -276,24 +276,24 @@ async def get_image(file_id: str):
         raise HTTPException(status_code=404, detail="Image not found")
 
 
-@app.post("/read_file/")
-def read_root(data: Contents):
-    num = data.num
-    book = data.Book
-    file_path = f"./Ebooks/{book}/{num}"
+# @app.post("/read_file/")
+# def read_root(data: Contents):
+#     num = data.num
+#     book = data.Book
+#     file_path = f"./Ebooks/{book}/{num}"
 
-    if not os.path.exists(file_path):
-        return {"error": "File not found"}
+#     if not os.path.exists(file_path):
+#         return {"error": "File not found"}
 
-    try:
-        with open(file_path, "r", encoding="utf-8") as file:
-            file_content = file.read()
-        return {"message": file_content}
+#     try:
+#         with open(file_path, "r", encoding="utf-8") as file:
+#             file_content = file.read()
+#         return {"message": file_content}
     
-    except Exception as e:  
-        with open(file_path, "r") as file:
-            file_content = file.read()
-        return {"message": file_content}
+#     except Exception as e:  
+#         with open(file_path, "r") as file:
+#             file_content = file.read()
+#         return {"message": file_content}
     
 @app.post("/add_book/")
 async def read_root(data: Addbook):
@@ -359,7 +359,7 @@ async def read_root(data: Onread):
             {"id": id, "Books.book": book},
             {"$set": {"Books.$.onread": True, "Books.$.inread": data.inread }}
         )
-        return {"deatil": "added onread true"}
+        return {"detail": "added onread true"}
     
 @app.post("/remove_book/")
 async def read_root(data: Removebook):

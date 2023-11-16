@@ -18,7 +18,7 @@ import { GameDataState } from "@/reducers/gameData";
 import gameDataSlice from "@/reducers/gameData";
 // import { UserDataState } from "@/reducers/userData";
 // import userDataSlice from "@/reducers/userData";
-// import { footerApi } from "@/api-rtk";
+import { footerApi } from "@/api-rtk";
 // import { withdrawDataState } from "@/reducers/withdrawData";
 // import withdrawalDataSlice from "@/reducers/withdrawData";
 // import { reportDataState } from "@/reducers/reportData";
@@ -35,7 +35,7 @@ export interface RootState {
 const rootReducer = combineReducers({
   gameData: gameDataSlice,
   // userData: userDataSlice,
-  // [footerApi.reducerPath]: footerApi.reducer,
+  [footerApi.reducerPath]: footerApi.reducer,
   // withdrawData: withdrawalDataSlice,
   // reportData: reportDataSlice
 });
@@ -52,7 +52,7 @@ const middleware = [
     serializableCheck: {
       ignoredActions: ["persist/PERSIST"],
     },
-  }).concat(),
+  }).concat(footerApi.middleware),
   thunk,
 ];
 

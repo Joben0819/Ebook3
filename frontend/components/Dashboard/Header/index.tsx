@@ -35,6 +35,7 @@ function index(props: any) {
     dispatch(setNavbar2(1));
     router.push("/");
   };
+  sessionStorage.setItem("href", window.location.pathname);
   // console.log(Response, "Response");
   return (
     <div className="flex w-full pl-10 gap-5 h-[10%] items-center">
