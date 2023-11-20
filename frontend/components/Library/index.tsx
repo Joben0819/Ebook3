@@ -41,26 +41,6 @@ const formSchema = z.object({
   username: z.string(),
 });
 
-export interface Artwork {
-  artist: string;
-  art: string;
-}
-
-export const worked: Artwork[] = [
-  {
-    artist: "Ornella Binni",
-    art: "https://images.unsplash.com/photo-1465869185982-5a1a7522cbcb?auto=format&fit=crop&w=300&q=80",
-  },
-  {
-    artist: "Tom Byrom",
-    art: "https://images.unsplash.com/photo-1548516173-3cabfa4607e9?auto=format&fit=crop&w=300&q=80",
-  },
-  {
-    artist: "Vladimir Malyavko",
-    art: "https://images.unsplash.com/photo-1494337480532-3725c85fd2ab?auto=format&fit=crop&w=300&q=80",
-  },
-];
-
 export default function index() {
   const [part, separt] = useState<any | null>("");
   const [data, setdata] = useState<any>([]);
@@ -109,28 +89,28 @@ export default function index() {
     }
   };
 
-  function Filtered(data: any) {
-    const favorite = AddedBook.filter((item: any) => item.status === data);
-    return favorite;
+  function Filtered(data: any, sub: string, item2: any, data2: boolean) {
+    let data3 = "";
+
+    const favorite = AddedBook.filter((item: any) =>
+      item[sub] === item2 ? data : ""
+    );
+    if (data2 === true) {
+      data3 = favorite.length;
+    } else {
+      data3 = favorite;
+    }
+
+    return data3;
   }
 
-  console.log(data?.filter((product: any, index: number) => AddedBook[index]));
-
-  const favorite = AddedBook.filter((item: any) =>
-    item.status === 1 ? item.length : ""
-  );
-  const Onread = AddedBook.filter((item: any) =>
-    item.inread !== 0 ? item.length : ""
-  );
-  const OnDone = AddedBook.filter((item: any) =>
-    item.Done === true ? item.length : ""
-  );
   const filteredProducts = part
     ? data.filter((product: any) => product.filename === part)
     : data &&
       data?.filter(
-        (product: any, index: number) =>
-          product.filename === Filtered(1)[index]?.book
+        (product: any) =>
+          product.filename ===
+          (AddedBook && AddedBook[InDex(product.filename)]?.book)
       );
 
   function Removed(datas: string) {
@@ -139,7 +119,7 @@ export default function index() {
         sessionStorage.removeItem(`Library-${datas}`);
         //@ts-ignore
         dispatch(AddBooked(Response.name, Response.id));
-        alert("wala");
+        alert("Removed");
       }
     );
   }
@@ -167,7 +147,7 @@ export default function index() {
     });
   }
 
-  // console.log(favorite,On);
+  console.log(Author);
 
   return (
     <>
@@ -246,25 +226,6 @@ export default function index() {
                     </div>
                   );
                 })}
-              {/* {worked.map((artwork) => (
-                <figure key={artwork.artist} className="shrink-0">
-                  <div className="overflow-hidden rounded-md">
-                    <Image
-                      src={artwork.art}
-                      alt={`Photo by ${artwork.artist}`}
-                      className="aspect-[3/4] h-fit w-fit object-cover"
-                      width={300}
-                      height={400}
-                    />
-                  </div>
-                  <figcaption className="pt-2 text-xs text-muted-foreground">
-                    Photo by{" "}
-                    <span className="font-semibold text-foreground">
-                      {artwork.artist}
-                    </span>
-                  </figcaption>
-                </figure>
-              ))} */}
             </div>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
@@ -272,16 +233,33 @@ export default function index() {
             <div className="flex items-center flex-col justify-center">
               <Image src={Heart} alt="heart" width="100" height="100" />
               <span>favorite</span>
+              <span>{Filtered(1, "status", 1, true)}</span>
             </div>
             <div className="flex items-center flex-col justify-center">
               <Image src={Book} alt="heart" width="100" height="100" />
               <span>Read</span>
+              <span>{Filtered(1, "onread", true, true)}</span>
             </div>
             <div className="flex items-center flex-col justify-center">
               <Image src={Check} alt="heart" width="100" height="100" />
               <span>Done</span>
+              <span>{Filtered(1, "Done", true, true)}</span>
             </div>
           </div>
+          {Author === Response?.name && (
+            <>
+              <div
+                className="bg-green-200 w-full cursor-pointer"
+                onClick={() => {
+                  router.push("/Write");
+                }}
+              >
+                Writer
+              </div>
+              <div className="bg-green-200 w-full cursor-pointer">Ratings</div>
+            </>
+          )}
+
           {forms ? (
             <div
               className="fixed w-full h-full justify-center flex items-center"

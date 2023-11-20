@@ -26,8 +26,8 @@ function index() {
       const val1 = title.value;
       console.log("Title:", title.value);
       console.log("Selected File:", selectedFile);
-      UploadFile({ filename: val1, file: selectedFile }).then((res) =>
-        console.log(res)
+      UploadFile({ filename: val1, file: selectedFile, Author1: "" }).then(
+        (res) => console.log(res)
       );
     }
     if (title) title.value = "";

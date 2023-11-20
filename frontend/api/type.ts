@@ -11,6 +11,7 @@ export type Register = {
 export type Upload = {
   filename: string;
   file: File | null;
+  Author1: string;
 };
 
 export type ReadFiled = {

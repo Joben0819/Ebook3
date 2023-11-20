@@ -8,8 +8,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 
 function index() {
-  const [data, setdata] = useState<any>([]);
-  const [text, settext] = useState("");
+  // const [data, setdata] = useState<any>([]);
+  // const [text, settext] = useState("");
   const searchParams = useSearchParams();
   const params = searchParams.get("Book") || "";
   const dex = searchParams.get("index");

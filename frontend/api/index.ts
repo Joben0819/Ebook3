@@ -88,6 +88,7 @@ export function UploadFile(data: Upload) {
   var formData = new FormData();
   formData.append("filename", data.filename);
   formData.append("file", data.file ?? "");
+  formData.append("Author1", data.Author1);
   return api("/UploadFile", Post, formData);
 }
 

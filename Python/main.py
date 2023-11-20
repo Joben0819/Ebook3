@@ -70,6 +70,7 @@ class Login(BaseModel):
 class FolderInput(BaseModel):
     title: str
     base64img: str
+    
 class TextFileInput(BaseModel):
     file_name: str  
     text_content: str  
@@ -242,7 +243,7 @@ async def create_text_file(text_data: TextFileInput):
     return {"status": "Added"}
 
 @app.post("/UploadFile/")
-async def create_upload_file(file: UploadFile = File(...), filename: str = Form(...)):
+async def create_upload_file(file: UploadFile = File(...), filename: str = Form(...), Author1: str = Form(...)):
     collection = db.get_collection("Ebooks")
     result = collection.find_one({"filename": filename})
     
@@ -254,7 +255,7 @@ async def create_upload_file(file: UploadFile = File(...), filename: str = Form(
         for item in data2:
             item["_id"] = str(item["_id"]) 
         setid = len(data2)
-        collection.insert_one({"filename": filename, "content": file.file.read(), "image": f"{Domain}/get_image/{filename}", "id": setid + 1  })
+        collection.insert_one({"filename": filename, "content": file.file.read(), "image": f"{Domain}/get_image/{filename}", "id": setid + 1 , "author": Author1 })
         return{"detail": "Added"}
 
 # def get_file_content(file_id: str):
