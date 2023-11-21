@@ -249,14 +249,16 @@ export default function index() {
           {Author === Response?.name && (
             <>
               <div
-                className="bg-green-200 w-full cursor-pointer"
+                className="bg-green-200 w-full cursor-pointer h-[2rem]"
                 onClick={() => {
                   router.push("/Write");
                 }}
               >
                 Writer
               </div>
-              <div className="bg-green-200 w-full cursor-pointer">Ratings</div>
+              <div className="bg-green-200 w-full cursor-pointer h-[2rem]">
+                Ratings
+              </div>
             </>
           )}
 

@@ -14,7 +14,7 @@ import {
 // import { Button } from "@/components/ui/";
 
 function index() {
-  const [data, setdata] = useState("");
+  // const [data, setdata] = useState("");
   const [modal, setmodal] = useState(false);
   const [book, setbook] = useState<any>([]);
   const [title, settitle] = useState("");
