@@ -10,7 +10,7 @@ export interface GameDataState {
   Navbar2: number;
   Modal: number;
   Response: any;
-  Chapter: any;
+  Chapter: string;
   Userdata: any;
   AddedBook: any;
   Bookshelf: any;
@@ -22,7 +22,7 @@ const initialState: GameDataState = {
   Navbar2: 1,
   Modal: 1,
   Response: [],
-  Chapter: [],
+  Chapter: "",
   Userdata: [],
   AddedBook: [],
   Bookshelf: [],

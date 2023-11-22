@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Writers, Books, RemoveBook } from "@/api";
+import { Writers, RemoveBook } from "@/api";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
-import { setChapter, AddBooked, Authoreds } from "@/reducers/gameData";
+import { setChapter, AddBooked, Authoreds, Book } from "@/reducers/gameData";
 import { useRouter } from "next/navigation";
 import Bookstore from "@/assets/Books/Library.png";
 import { RootState } from "@/store";
@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import Heart from "@/public/heart.png";
-import Book from "@/public/open-book.png";
+import Books from "@/public/open-book.png";
 import Check from "@/public/check-mark.png";
 import {
   Form,
@@ -43,11 +43,12 @@ const formSchema = z.object({
 
 export default function index() {
   const [part, separt] = useState<any | null>("");
-  const [data, setdata] = useState<any>([]);
+  // const [data, setdata] = useState<any>([]);
   const [forms, setform] = useState(false);
+  const [partial, setpartial] = useState(0);
   const dispatch = useDispatch();
   const router = useRouter();
-  const { Response, AddedBook, Author } = useSelector(
+  const { Response, AddedBook, Author, Bookshelf } = useSelector(
     (state: RootState) => state.gameData
   );
 
@@ -69,9 +70,8 @@ export default function index() {
     //@ts-ignore
     dispatch(AddBooked(Response.name, Response.id));
 
-    Books({}).then((res) => {
-      setdata(res.data);
-    });
+    //@ts-ignore
+    dispatch(Book());
 
     return () => {
       if (inputElement) {
@@ -91,7 +91,6 @@ export default function index() {
 
   function Filtered(data: any, sub: string, item2: any, data2: boolean) {
     let data3 = "";
-
     const favorite = AddedBook.filter((item: any) =>
       item[sub] === item2 ? data : ""
     );
@@ -105,12 +104,16 @@ export default function index() {
   }
 
   const filteredProducts = part
-    ? data.filter((product: any) => product.filename === part)
-    : data &&
-      data?.filter(
-        (product: any) =>
-          product.filename ===
-          (AddedBook && AddedBook[InDex(product.filename)]?.book)
+    ? AddedBook.filter(
+        (product: any) => product.book === part && product.status === 1
+      )
+    : AddedBook &&
+      AddedBook?.filter((product: any) =>
+        partial === 0
+          ? product.status === 1
+          : partial === 1
+          ? product.onread === true
+          : product.Done === true
       );
 
   function Removed(datas: string) {
@@ -147,7 +150,7 @@ export default function index() {
     });
   }
 
-  console.log(Author);
+  console.log(AddedBook, "here");
 
   return (
     <>
@@ -182,7 +185,7 @@ export default function index() {
                           fill
                         />
                       </div>
-                      {data.filename}
+                      {data.book}
                       <div
                         className="group/edit invisible absolute w-full flex-col h-full flex justify-center items-center group-hover/item:visible ..."
                         style={{ backgroundColor: "rgba(.5, .5, .5, .3)" }}
@@ -191,7 +194,7 @@ export default function index() {
                           className="group-hover/edit:text-gray-700 ..."
                           style={{ cursor: "pointer", color: "blue" }}
                           onClick={() => {
-                            Removed(data.filename);
+                            Removed(data.book);
                           }}
                         >
                           Removed
@@ -201,23 +204,15 @@ export default function index() {
                           style={{ cursor: "pointer", color: "#fff" }}
                           onClick={() => {
                             router.push(
-                              `/read?Book=${
-                                data.filename
-                              }&data=0&index=${Number(
-                                sessionStorage.getItem(`title-${data.filename}`)
+                              `/read?Book=${data.book}&data=0&index=${Number(
+                                sessionStorage.getItem(`title-${data.book}`)
                               )}`
                             ),
-                              dispatch(setChapter(data));
+                              dispatch(setChapter(data.book));
                           }}
                         >
-                          {AddedBook &&
-                          AddedBook[InDex(data.filename)]?.onread === true ? (
-                            AddedBook &&
-                            AddedBook[InDex(data.filename)]?.Done === true ? (
-                              <>Done</>
-                            ) : (
-                              <>Onread</>
-                            )
+                          {data.onread === true && data.Done === false ? (
+                            <>Onread</>
                           ) : (
                             <>Read</>
                           )}
@@ -230,39 +225,46 @@ export default function index() {
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
           <div className="w-full h-[10rem] bg-green-200 flex justify-evenly">
-            <div className="flex items-center flex-col justify-center">
+            <div
+              className="flex items-center flex-col justify-center"
+              onClick={() => setpartial(0)}
+            >
               <Image src={Heart} alt="heart" width="100" height="100" />
               <span>favorite</span>
               <span>{Filtered(1, "status", 1, true)}</span>
             </div>
-            <div className="flex items-center flex-col justify-center">
-              <Image src={Book} alt="heart" width="100" height="100" />
+            <div
+              className="flex items-center flex-col justify-center"
+              onClick={() => setpartial(1)}
+            >
+              <Image src={Books} alt="heart" width="100" height="100" />
               <span>Read</span>
               <span>{Filtered(1, "onread", true, true)}</span>
             </div>
-            <div className="flex items-center flex-col justify-center">
+            <div
+              className="flex items-center flex-col justify-center"
+              onClick={() => setpartial(2)}
+            >
               <Image src={Check} alt="heart" width="100" height="100" />
               <span>Done</span>
               <span>{Filtered(1, "Done", true, true)}</span>
             </div>
           </div>
           {Author === Response?.name && (
-            <>
+            <div className="flex w-full h-[2rem] border-y-2">
               <div
-                className="bg-green-200 w-full cursor-pointer h-[2rem]"
+                className=" w-[50%] cursor-pointer text-center border-r"
                 onClick={() => {
                   router.push("/Write");
                 }}
               >
                 Writer
               </div>
-              <div className="bg-green-200 w-full cursor-pointer h-[2rem]">
-                Ratings
-              </div>
-            </>
+              <div className=" w-[50%] cursor-pointer text-center">Ratings</div>
+            </div>
           )}
 
-          {forms ? (
+          {forms && (
             <div
               className="fixed w-full h-full justify-center flex items-center"
               style={{ top: "0", backgroundColor: "rgba(.5, .5, .5, .5)" }}
@@ -332,8 +334,6 @@ export default function index() {
                 </form>
               </Form>
             </div>
-          ) : (
-            ""
           )}
         </div>
       </div>

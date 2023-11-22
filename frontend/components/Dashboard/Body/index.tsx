@@ -91,7 +91,10 @@ function index() {
           if (item.status === 1) {
             sessionStorage.setItem(`Library-${item.book}`, idx);
           } else if (item.inread !== 0) {
-            sessionStorage.setItem(`page-${item.book}`, item.inread);
+            sessionStorage.setItem(
+              `page-${item.book}`,
+              !item ? 0 : item.inread
+            );
           }
         }
         sessionStorage.setItem(`title-${item.book}`, idx);
@@ -145,7 +148,7 @@ function index() {
               Addition(data.filename, index);
               return (
                 <div
-                  className="w-44 h-52 relative flex items-center flex-col group/item hover:bg-slate-100 ..."
+                  className="w-44 relative flex items-center flex-col group/item hover:bg-slate-100 ..."
                   key={index}
                 >
                   {AddedBook &&
@@ -163,7 +166,21 @@ function index() {
                       fill
                     />
                   </div>
-                  {data.filename}
+                  <p
+                    className="w-full text-center text-[1.3rem] border-b-2"
+                    style={{
+                      color: "rgb(167,25,75)",
+                      fontFamily: "ui-monospace",
+                    }}
+                  >
+                    {data.filename}
+                  </p>
+                  <span
+                    className="text-[.8rem]"
+                    style={{ color: "rgb(172,172,172)" }}
+                  >
+                    By:{data.author}
+                  </span>
                   <div
                     className="group/edit invisible absolute w-full flex-col h-full flex justify-center items-center group-hover/item:visible ..."
                     style={{ backgroundColor: "rgba(.5, .5, .5, .3)" }}
@@ -203,14 +220,18 @@ function index() {
                       className="group-hover/edit:text-gray-700 ..."
                       style={{ cursor: "pointer", color: "#fff" }}
                       onClick={() => {
+                        console.log(
+                          sessionStorage.getItem(`page-${data.filename}`),
+                          data.filename
+                        );
                         if (data.chapter) {
-                          router.push(
-                            `/read?Book=${data.filename}&data=${
-                              sessionStorage.getItem(`page-${data.filename}`) ||
-                              0
-                            }&index=${index}`
-                          );
-                          dispatch(setChapter(data));
+                          // router.push(
+                          //   `/read?Book=${data.filename}&data=${
+                          //     sessionStorage.getItem(`page-${data.filename}`) ||
+                          //     0
+                          //   }&index=${index}`
+                          // );
+                          // dispatch(setChapter(data.filename));
                         } else {
                           alert("No Story Yet");
                         }

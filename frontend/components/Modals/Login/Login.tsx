@@ -47,7 +47,6 @@ export default function Login() {
           }, 400);
         } else {
           setstate(true);
-          // console.log(res.data[0].id);
           const ids = res.data.id;
           //@ts-ignore
           // dispatch(AddBooked(name, ids));

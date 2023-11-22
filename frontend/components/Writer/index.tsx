@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Books, UploadFile, CreateFile } from "@/api";
+import { UploadFile, CreateFile, BookSheleves } from "@/api";
 import { RootState } from "@/store";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
@@ -33,11 +33,11 @@ function index() {
   const [title, settitle] = useState("");
   const [index, setindex] = useState<any>("");
   const [chapter, setchapter] = useState("");
-  const [book, setbook] = useState("");
+  const [book, setbook] = useState<any>([]);
   const [writer, setwriter] = useState([]);
-  const [position, setPosition] = React.useState("0");
+  const [position, setPosition] = useState<any>("");
   const dispatch = useDispatch();
-  const { Author, Bookshelf } = useSelector(
+  const { Author, Bookshelf, Response } = useSelector(
     (state: RootState) => state.gameData
   );
   const router = useRouter();
@@ -62,8 +62,8 @@ function index() {
       "image-input"
     ) as HTMLInputElement | null;
     const val1 = title;
-    console.log("Title:", title);
-    console.log("Selected File:", selectedFile);
+    // console.log("Title:", title);
+    // console.log("Selected File:", selectedFile);
     UploadFile({
       filename: val1,
       file: selectedFile,
@@ -75,6 +75,9 @@ function index() {
             imageInput.value = "";
           }
         }
+        //@ts-ignore
+        dispatch(Book());
+        BookSheleves({ id: Response.id, book: val1 });
         settitle("");
         alert(res.data.detail);
         setform(false);
@@ -96,7 +99,7 @@ function index() {
       setload(true);
       CreateFile({
         file_name: chapter,
-        Book: book,
+        Book: book?.filename,
         text_content: story?.value,
       }).then((res) => {
         if (res.data.status === "Added") {
@@ -105,7 +108,7 @@ function index() {
           setTimeout(() => {
             setload(false);
             setchapter("");
-            setbook("");
+            setbook([]);
             story.value = "";
             alert("success");
           }, 2000);
@@ -116,7 +119,7 @@ function index() {
     }
   };
 
-  console.log(Bookshelf, "part2");
+  console.log(book, "part2");
 
   return (
     <div className="p-[2rem] h-[100%] relative">
@@ -149,7 +152,7 @@ function index() {
                 Add Book+
               </button>
             </div>
-            <div className="flex  w-[100%] items-baseline">
+            <div className="flex justify-between  w-[100%] items-baseline">
               <input
                 type="text"
                 className="w-[50%] h-[3rem]"
@@ -160,11 +163,19 @@ function index() {
               <input
                 type="file"
                 onChange={handleFileChange}
-                className="w-[50%] h-[3rem]"
+                className="w-[45%] h-[3rem]"
                 id="image-input"
               />
             </div>
-            <div></div>
+            <div>
+              <button
+                className=" p-[1rem] bg-green-200"
+                type="submit"
+                onClick={() => setform(false)}
+              >
+                Exit
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -184,19 +195,18 @@ function index() {
           <div className="h-full flex w-[50%] gap-[1.5rem] ">
             <DropdownMenu>
               <DropdownMenuTrigger>
-                {book === "" ? "Open" : book}
+                {book.length === 0 ? "Open" : book?.filename}
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56">
-                <DropdownMenuLabel>Panel Position</DropdownMenuLabel>
                 <DropdownMenuRadioGroup
-                  value={position}
-                  onValueChange={setPosition}
+                // value={position}
+                // onValueChange={setPosition}
                 >
-                  {filteredAuthor?.map((data: any) => {
+                  {filteredAuthor?.map((data: any, indx: number) => {
                     return (
                       <div
                         key={data.id}
-                        onClick={() => setbook(data.filename)}
+                        onClick={() => (setbook(data), setPosition(indx))}
                         className="cursor-pointer"
                       >
                         {data.filename}
@@ -217,8 +227,14 @@ function index() {
               disabled={load}
               className="bg-blue-200"
               onClick={() => {
-                if (load === false) {
+                if (load === false && book.length !== 0 && chapter !== "") {
                   Chapter();
+                } else {
+                  book.length !== 0
+                    ? alert("No title book")
+                    : chapter === ""
+                    ? alert("No title")
+                    : "";
                 }
               }}
             >
@@ -248,22 +264,26 @@ function index() {
         <div className="h-[10]">
           <ScrollArea className="w-full whitespace-nowrap rounded-md border">
             <div className="flex w-max space-x-4 p-4">
-              {filteredAuthor[0]?.chapter?.map((data: any, idx: number) => {
-                return (
-                  <div
-                    key={idx}
-                    onClick={() => {
-                      setindex(idx);
-                    }}
-                    className="cursor-pointer"
-                    style={{
-                      borderBottom: index === idx ? "solid 1px blue" : "",
-                    }}
-                  >
-                    {data.title}
-                  </div>
-                );
-              })}
+              {filteredAuthor[position === "" ? "" : position]?.chapter?.map(
+                (data: any, idx: number) => {
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => {
+                        setindex(idx);
+                      }}
+                      className="cursor-pointer"
+                      style={{
+                        borderBottom: index === idx ? "solid 1px blue" : "",
+                      }}
+                    >
+                      {data.title.length <= 9
+                        ? data.title
+                        : data.title.substring(0, 9) + "..."}
+                    </div>
+                  );
+                }
+              )}
             </div>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
@@ -271,7 +291,11 @@ function index() {
       </div>
       <div className="h-[40%] overflow-y-auto">
         <span>
-          {filteredAuthor[0]?.chapter[index === "" ? "" : index]?.content}
+          {filteredAuthor[0]?.chapter === undefined
+            ? ""
+            : filteredAuthor[position === "" ? "" : position]?.chapter[
+                index === "" ? "" : index
+              ]?.content}
         </span>
       </div>
     </div>

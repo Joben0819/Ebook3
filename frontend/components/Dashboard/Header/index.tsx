@@ -36,10 +36,10 @@ function index(props: any) {
     router.push("/");
   };
   sessionStorage.setItem("href", window.location.pathname);
-  // console.log(Response, "Response");
+  console.log(Navbar2, "Response");
   return (
     <div className="flex w-full pl-10 gap-5 h-[10%] items-center">
-      {sessionStorage.getItem("data") && (
+      {Response.length !== 0 && (
         <div
           className="w-20 flex items-center gap-2 "
           style={{ cursor: "pointer" }}
@@ -63,13 +63,15 @@ function index(props: any) {
               priority={true}
               fill
             />
-          </div>{" "}
-          Logout
+          </div>
+          <span style={{ fontFamily: "ui-monospace" }}>Logout</span>
         </div>
       )}
       <div
         className="w-20 flex items-center gap-2 "
-        style={{ cursor: "pointer", color: Navbar2 == 1 ? "blue" : "" }}
+        style={{
+          cursor: "pointer",
+        }}
         onClick={route2}
       >
         <div className="w-4 relative h-5">
@@ -80,12 +82,21 @@ function index(props: any) {
             priority={true}
             fill
           />
-        </div>{" "}
-        Books
+        </div>
+        <span
+          style={{
+            color: Navbar2 == 1 ? "rgb(167,25,75)" : "rgb(172,172,172)",
+            fontFamily: "ui-monospace",
+          }}
+        >
+          Books
+        </span>
       </div>
       <div
         className="w-20 flex items-center gap-2 "
-        style={{ cursor: "pointer", color: Navbar2 == 2 ? "blue" : "" }}
+        style={{
+          cursor: "pointer",
+        }}
         onClick={route}
       >
         <div className="w-4 relative h-5">
@@ -97,7 +108,14 @@ function index(props: any) {
             fill
           />
         </div>
-        Profile
+        <span
+          style={{
+            color: Navbar2 == 2 ? "rgb(167,25,75)" : "rgb(172,172,172)",
+            fontFamily: "ui-monospace",
+          }}
+        >
+          Profile
+        </span>
       </div>
       <input type="text" placeholder="Search" id="search" />
     </div>

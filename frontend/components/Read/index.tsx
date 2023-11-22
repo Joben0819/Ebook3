@@ -4,33 +4,28 @@ import { useSearchParams } from "next/navigation";
 import { Books, Onread, Done } from "@/api";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
+import { Book } from "@/reducers/gameData";
 
 function index() {
-  // const [data, setdata] = useState<any>([]);
-  // const [text, settext] = useState("");
   const searchParams = useSearchParams();
   const params = searchParams.get("Book") || "";
   const dex = searchParams.get("index");
   const number = searchParams.get("data") || 0;
   const router = useRouter();
-  // console.log(Number(number), "here");
-  const { Chapter, Response } = useSelector(
+  const dispatch = useDispatch();
+  const { Chapter, Response, Bookshelf } = useSelector(
     (state: RootState) => state.gameData || []
   );
 
-  useEffect(() => {
-    // ReadFile({
-    //   num: Chapter.chapter[Number(number)],
-    //   Book: params,
-    // }).then((res) => settext(res.data.message));
-    // Books({}).then((res) => setdata(res.data));
+  const FilteredBook = Bookshelf.filter(
+    (data: any) => data.filename === Chapter
+  );
 
+  useEffect(() => {
     const hgt = document.getElementById("story") as HTMLElement;
     const innerhgt = hgt?.clientHeight;
-    // console.log(hgt?.clientHeight, "this");
-
     function handleScroll() {
       const distanceToBottom =
         document.documentElement.scrollHeight -
@@ -39,10 +34,10 @@ function index() {
       const threshold = 1000;
       if (distanceToBottom < threshold) {
         if (
-          Number(number) === Chapter.chapter?.length - 1 &&
+          Number(number) === FilteredBook[0].chapter?.length - 1 &&
           Response.length !== 0
         ) {
-          Done({ id: Response.id, book: Chapter.filename });
+          Done({ id: Response.id, book: FilteredBook[0].filename });
           console.log("Done");
         }
       }
@@ -52,21 +47,31 @@ function index() {
       window.addEventListener("scroll", handleScroll);
     } else {
       if (
-        Number(number) === Chapter.chapter?.length - 1 &&
+        Number(number) === FilteredBook[0].chapter?.length - 1 &&
         Response.length !== 0
       ) {
-        Done({ id: Response.id, book: Chapter.filename });
+        Done({ id: Response.id, book: FilteredBook[0].filename });
         console.log("Done2");
       }
     }
+
+    //@ts-ignore
+    dispatch(Book());
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, [number, Chapter]);
 
-  console.log(Response, Chapter);
+  console.log(
+    Bookshelf.filter((data: any) => data.filename === Chapter)[0]?.chapter[
+      number
+    ]?.title,
+
+    "here2"
+  );
   const Href = sessionStorage.getItem("href");
+
   return (
     <>
       <Button
@@ -78,9 +83,9 @@ function index() {
       </Button>
       <div className="text-center p-[3rem]">
         <h1 className="text-[1.5rem]">
-          {Chapter.chapter[Number(number)]?.title}
+          {FilteredBook[0].chapter[Number(number)]?.title}
         </h1>
-        <div id="story">{Chapter.chapter[Number(number)]?.content}</div>
+        <div id="story">{FilteredBook[0].chapter[Number(number)]?.content}</div>
 
         <div className="flex w-full justify-between ">
           <Button
@@ -99,19 +104,19 @@ function index() {
           </Button>
           <Button
             variant={
-              Number(number) === Chapter.chapter?.length - 1
+              Number(number) === FilteredBook[0].chapter?.length - 1
                 ? "secondary"
                 : "default"
             }
             onClick={() => {
-              if (Number(number) === Chapter.chapter?.length - 1) {
+              if (Number(number) === FilteredBook[0].chapter?.length - 1) {
                 ("");
               } else {
                 if (Response.length !== 0) {
                   Onread({
                     id: Response.id,
-                    book: Chapter.filename,
-                    image: Chapter.image,
+                    book: FilteredBook[0].filename,
+                    image: FilteredBook[0].image,
                     name: Response.name,
                     idx: Number(dex),
                     inread: Number(number) + 1,

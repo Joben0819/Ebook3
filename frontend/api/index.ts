@@ -13,6 +13,7 @@ import {
   OnDone,
   OnWriter,
   Authors,
+  Stories,
 } from "./type";
 
 export const Domain = "http://127.0.0.1:8000";
@@ -126,4 +127,8 @@ export function Writers(data: OnWriter) {
 
 export function Authored(data: Authors) {
   return api("/author", Post, data);
+}
+
+export function BookSheleves(data: Stories) {
+  return api("/YourBook", Post, data);
 }

@@ -70,4 +70,9 @@ export type OnDone = {
   book: string;
 };
 
+export type Stories = {
+  id: number;
+  book: string;
+};
+
 export type Book = {};
