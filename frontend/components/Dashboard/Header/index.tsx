@@ -36,13 +36,12 @@ function index(props: any) {
     router.push("/");
   };
   sessionStorage.setItem("href", window.location.pathname);
-  console.log(Navbar2, "Response");
+  console.log(Response, "Response");
   return (
-    <div className="flex w-full pl-10 gap-5 h-[10%] items-center">
+    <div className="flex w-full justify-center gap-5 h-[10%] items-center">
       {Response.length !== 0 && (
         <div
-          className="w-20 flex items-center gap-2 "
-          style={{ cursor: "pointer" }}
+          className="w-20 flex items-center gap-2 cursor-pointer "
           onClick={() => {
             sessionStorage.clear(),
               dispatch(setModal(1)),
@@ -68,10 +67,7 @@ function index(props: any) {
         </div>
       )}
       <div
-        className="w-20 flex items-center gap-2 "
-        style={{
-          cursor: "pointer",
-        }}
+        className="w-20 flex items-center gap-2 cursor-pointer"
         onClick={route2}
       >
         <div className="w-4 relative h-5">
@@ -93,10 +89,7 @@ function index(props: any) {
         </span>
       </div>
       <div
-        className="w-20 flex items-center gap-2 "
-        style={{
-          cursor: "pointer",
-        }}
+        className="w-20 flex items-center gap-2 cursor-pointer"
         onClick={route}
       >
         <div className="w-4 relative h-5">
@@ -117,7 +110,7 @@ function index(props: any) {
           Profile
         </span>
       </div>
-      <input type="text" placeholder="Search" id="search" />
+      <input className="w-[20%]" type="text" placeholder="Search" id="search" />
     </div>
   );
 }

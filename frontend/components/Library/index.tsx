@@ -89,10 +89,20 @@ export default function index() {
     }
   };
 
-  function Filtered(data: any, sub: string, item2: any, data2: boolean) {
+  function Filtered(
+    data: any,
+    sub: string,
+    item2: any,
+    data2: boolean,
+    part: number
+  ) {
     let data3 = "";
     const favorite = AddedBook.filter((item: any) =>
-      item[sub] === item2 ? data : ""
+      part === 1
+        ? item[sub] === item2
+          ? data
+          : ""
+        : item[sub] === item2 && item.onread === false
     );
     if (data2 === true) {
       data3 = favorite.length;
@@ -104,8 +114,12 @@ export default function index() {
   }
 
   const filteredProducts = part
-    ? AddedBook.filter(
-        (product: any) => product.book === part && product.status === 1
+    ? AddedBook.filter((product: any) =>
+        product.book === part && partial === 0
+          ? product.status === 1
+          : partial === 1
+          ? product.onread === true
+          : product.Done === true
       )
     : AddedBook &&
       AddedBook?.filter((product: any) =>
@@ -113,7 +127,7 @@ export default function index() {
           ? product.status === 1
           : partial === 1
           ? product.onread === true
-          : product.Done === true
+          : product.Done === true && product.onread === false
       );
 
   function Removed(datas: string) {
@@ -150,8 +164,6 @@ export default function index() {
     });
   }
 
-  console.log(AddedBook, "here");
-
   return (
     <>
       <div className="h-full flex items-center flex-col  ">
@@ -179,7 +191,7 @@ export default function index() {
                       <div className="relative w-11/12 relative h-48">
                         <Image
                           src={data.image ? data.image : Bookstore}
-                          alt={data.filename}
+                          alt="title"
                           sizes="(max-width: 100vw) 100vw"
                           priority={true}
                           fill
@@ -231,23 +243,23 @@ export default function index() {
             >
               <Image src={Heart} alt="heart" width="100" height="100" />
               <span>favorite</span>
-              <span>{Filtered(1, "status", 1, true)}</span>
+              <span>{Filtered(1, "status", 1, true, 1)}</span>
             </div>
             <div
               className="flex items-center flex-col justify-center"
               onClick={() => setpartial(1)}
             >
-              <Image src={Books} alt="heart" width="100" height="100" />
+              <Image src={Books} alt="book" width="100" height="100" />
               <span>Read</span>
-              <span>{Filtered(1, "onread", true, true)}</span>
+              <span>{Filtered(1, "onread", true, true, 1)}</span>
             </div>
             <div
               className="flex items-center flex-col justify-center"
               onClick={() => setpartial(2)}
             >
-              <Image src={Check} alt="heart" width="100" height="100" />
+              <Image src={Check} alt="check" width="100" height="100" />
               <span>Done</span>
-              <span>{Filtered(1, "Done", true, true)}</span>
+              <span>{Filtered(1, "Done", true, true, 2)}</span>
             </div>
           </div>
           {Author === Response?.name && (

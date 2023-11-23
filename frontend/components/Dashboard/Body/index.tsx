@@ -13,7 +13,7 @@ import { useGetDataMutation } from "@/api-rtk";
 function index() {
   const router = useRouter();
   const [part, separt] = useState<string | null>("");
-  const [data1, setdata] = useState([]);
+  const [data1, setdata] = useState<any>([]);
   const dispatch = useDispatch();
   const { Response, AddedBook } = useSelector(
     (state: RootState) => state.gameData
@@ -87,16 +87,6 @@ function index() {
   function Addition(title: string, data: number) {
     AddedBook &&
       AddedBook.forEach((item: any, idx: any) => {
-        if (item.book === title) {
-          if (item.status === 1) {
-            sessionStorage.setItem(`Library-${item.book}`, idx);
-          } else if (item.inread !== 0) {
-            sessionStorage.setItem(
-              `page-${item.book}`,
-              !item ? 0 : item.inread
-            );
-          }
-        }
         sessionStorage.setItem(`title-${item.book}`, idx);
         sessionStorage.setItem(`count-favorite`, AddedBook.length);
       });
@@ -111,21 +101,22 @@ function index() {
     }
   };
 
-  console.log(filteredProducts, AddedBook);
+  // console.log(data1?.detail, AddedBook);
   // const example1 = AddedBook.filter((items: any, idx2: number) =>
   //   items.inread !== 0 ? idx2 : idx2
   // );
 
-  //  const fetchData = async () => {
-  //    try {
-  //      const resultAction = await dispatch(getData());
-  //      const result = unwrapResult(resultAction);
-  //      console.log("Fetched Footer Data:", result);
-  //    } catch (error) {
-  //      console.error("Error fetching Footer Data:", error);
-  //    }
-  //  };
-
+  const fetchData = async () => {
+    try {
+      //  const resultAction = await dispatch(getData());
+      //  const result = unwrapResult(resultAction);
+      console.log("Fetched Footer Data:");
+    } catch (error) {
+      console.error("Error fetching Footer Data:", error);
+    }
+    console.log("server-side");
+  };
+  // console.log(AddedBook, "here");
   return (
     <div className="flex w-full items-center h-[90] flex-col gap-12">
       <div className="flex-col flex w-full items-center">
@@ -139,120 +130,122 @@ function index() {
             fill
           />
         </div>
-        <h3 className="text-center">Books</h3>
+        <h3 className="text-center" onClick={fetchData}>
+          Books
+        </h3>
       </div>
       <div className="w-full h-full flex gap-y-8 flex-wrap gap-20 justify-center">
-        {filteredProducts.length === 0 && AddedBook
-          ? "Loading"
-          : filteredProducts.map((data: any, index: number) => {
-              Addition(data.filename, index);
-              return (
+        {data1?.detail === "wala" ? (
+          <span>No Books</span>
+        ) : filteredProducts.length === 0 && AddedBook ? (
+          "Loading"
+        ) : (
+          filteredProducts.map((data: any, index: number) => {
+            Addition(data.filename, index);
+            return (
+              <div
+                className="w-44 relative flex items-center flex-col group/item hover:bg-slate-100 ..."
+                key={index}
+              >
+                {AddedBook && AddedBook[InDex(data.filename)]?.status === 1 ? (
+                  <div className="absolute right-[10px] z-[1] top-[0] rounded-[10px] bg-green-500 h-[20px] w-[20px]" />
+                ) : (
+                  ""
+                )}
+                <div className="relative w-11/12 relative h-48">
+                  <Image
+                    src={data.image ? data.image : Bookstore}
+                    alt={data.filename}
+                    sizes="(max-width: 100vw) 100vw"
+                    priority={true}
+                    fill
+                  />
+                </div>
+                <p
+                  className="w-full text-center text-[1.3rem] border-b-2"
+                  style={{
+                    color: "rgb(167,25,75)",
+                    fontFamily: "ui-monospace",
+                  }}
+                >
+                  {data.filename}
+                </p>
+                <span
+                  className="text-[.8rem]"
+                  style={{ color: "rgb(172,172,172)" }}
+                >
+                  By:{data.author}
+                </span>
                 <div
-                  className="w-44 relative flex items-center flex-col group/item hover:bg-slate-100 ..."
-                  key={index}
+                  className="group/edit invisible absolute w-full flex-col h-full flex justify-center items-center group-hover/item:visible ..."
+                  style={{ backgroundColor: "rgba(.5, .5, .5, .3)" }}
                 >
                   {AddedBook &&
                   AddedBook[InDex(data.filename)]?.status === 1 ? (
-                    <div className="absolute right-[10px] z-[1] top-[0] rounded-[10px] bg-green-500 h-[20px] w-[20px]" />
-                  ) : (
-                    ""
-                  )}
-                  <div className="relative w-11/12 relative h-48">
-                    <Image
-                      src={data.image ? data.image : Bookstore}
-                      alt={data.filename}
-                      sizes="(max-width: 100vw) 100vw"
-                      priority={true}
-                      fill
-                    />
-                  </div>
-                  <p
-                    className="w-full text-center text-[1.3rem] border-b-2"
-                    style={{
-                      color: "rgb(167,25,75)",
-                      fontFamily: "ui-monospace",
-                    }}
-                  >
-                    {data.filename}
-                  </p>
-                  <span
-                    className="text-[.8rem]"
-                    style={{ color: "rgb(172,172,172)" }}
-                  >
-                    By:{data.author}
-                  </span>
-                  <div
-                    className="group/edit invisible absolute w-full flex-col h-full flex justify-center items-center group-hover/item:visible ..."
-                    style={{ backgroundColor: "rgba(.5, .5, .5, .3)" }}
-                  >
-                    {AddedBook &&
-                    AddedBook[InDex(data.filename)]?.status === 1 ? (
-                      <span
-                        className="group-hover/edit:text-gray-700 ..."
-                        style={{
-                          cursor: "pointer",
-                          color: "blue",
-                        }}
-                        onClick={() => {
-                          Removed(data.filename, index);
-                        }}
-                      >
-                        Removed
-                      </span>
-                    ) : (
-                      <span
-                        className="group-hover/edit:text-gray-700 ..."
-                        style={{
-                          cursor: "pointer",
-                          color: "#fff",
-                        }}
-                        onClick={() => {
-                          if (Response.length !== 0) {
-                            Added(data.filename, data.image, index);
-                          } else {
-                          }
-                        }}
-                      >
-                        Favorite
-                      </span>
-                    )}
                     <span
                       className="group-hover/edit:text-gray-700 ..."
-                      style={{ cursor: "pointer", color: "#fff" }}
+                      style={{
+                        cursor: "pointer",
+                        color: "blue",
+                      }}
                       onClick={() => {
-                        console.log(
-                          sessionStorage.getItem(`page-${data.filename}`),
-                          data.filename
-                        );
-                        if (data.chapter) {
-                          // router.push(
-                          //   `/read?Book=${data.filename}&data=${
-                          //     sessionStorage.getItem(`page-${data.filename}`) ||
-                          //     0
-                          //   }&index=${index}`
-                          // );
-                          // dispatch(setChapter(data.filename));
+                        Removed(data.filename, index);
+                      }}
+                    >
+                      Removed
+                    </span>
+                  ) : (
+                    <span
+                      className="group-hover/edit:text-gray-700 ..."
+                      style={{
+                        cursor: "pointer",
+                        color: "#fff",
+                      }}
+                      onClick={() => {
+                        if (Response.length !== 0) {
+                          Added(data.filename, data.image, index);
                         } else {
-                          alert("No Story Yet");
                         }
                       }}
                     >
-                      {AddedBook &&
-                      AddedBook[InDex(data.filename)]?.onread === true ? (
-                        AddedBook &&
-                        AddedBook[InDex(data.filename)]?.Done === true ? (
-                          <>Done</>
-                        ) : (
-                          <>Onread</>
-                        )
-                      ) : (
-                        <>Read</>
-                      )}
+                      Favorite
                     </span>
-                  </div>
+                  )}
+                  <span
+                    className="group-hover/edit:text-gray-700 ..."
+                    style={{ cursor: "pointer", color: "#fff" }}
+                    onClick={() => {
+                      if (data.chapter) {
+                        router.push(
+                          `/read?Book=${data.filename}&data=${
+                            AddedBook[InDex(data.filename)]?.inread || 0
+                          }&index=${index}`
+                        );
+                        dispatch(setChapter(data.filename));
+                      } else {
+                        alert("No Story Yet");
+                      }
+                    }}
+                  >
+                    {AddedBook.length === 0 ? (
+                      "Read"
+                    ) : AddedBook &&
+                      AddedBook[InDex(data.filename)]?.Done === true &&
+                      AddedBook[InDex(data.filename)]?.onread === false ? (
+                      <>Done</>
+                    ) : AddedBook &&
+                      AddedBook[InDex(data.filename)]?.Done === false &&
+                      AddedBook[InDex(data.filename)]?.onread === false ? (
+                      <>Read</>
+                    ) : (
+                      <>Onread</>
+                    )}
+                  </span>
                 </div>
-              );
-            })}
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
   );

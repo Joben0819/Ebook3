@@ -51,9 +51,10 @@ function index() {
     dispatch(Book());
   }, []);
 
-  const filteredAuthor: Author[] = Bookshelf.filter(
-    (data: any) => data.author === Author
-  );
+  const filteredAuthor: Author[] =
+    Bookshelf.detail === "wala"
+      ? ""
+      : Bookshelf.filter((data: any) => data.author === Author);
 
   //   console.log(filteredAuthor);
 
@@ -119,7 +120,7 @@ function index() {
     }
   };
 
-  console.log(book, "part2");
+  console.log(Bookshelf, "part2");
 
   return (
     <div className="p-[2rem] h-[100%] relative">
@@ -202,17 +203,19 @@ function index() {
                 // value={position}
                 // onValueChange={setPosition}
                 >
-                  {filteredAuthor?.map((data: any, indx: number) => {
-                    return (
-                      <div
-                        key={data.id}
-                        onClick={() => (setbook(data), setPosition(indx))}
-                        className="cursor-pointer"
-                      >
-                        {data.filename}
-                      </div>
-                    );
-                  })}
+                  {Bookshelf.detail === "wala"
+                    ? ""
+                    : filteredAuthor?.map((data: any, indx: number) => {
+                        return (
+                          <div
+                            key={data.id}
+                            onClick={() => (setbook(data), setPosition(indx))}
+                            className="cursor-pointer"
+                          >
+                            {data.filename}
+                          </div>
+                        );
+                      })}
                 </DropdownMenuRadioGroup>
               </DropdownMenuContent>
             </DropdownMenu>

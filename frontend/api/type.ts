@@ -51,6 +51,7 @@ export type OnRead = {
   name: string;
   idx: number;
   inread: number;
+  author: string;
 };
 
 export type OnWriter = {

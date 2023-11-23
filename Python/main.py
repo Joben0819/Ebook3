@@ -70,6 +70,7 @@ class Login(BaseModel):
 class FolderInput(BaseModel):
     title: str
     base64img: str
+    id: int
     
 class TextFileInput(BaseModel):
     file_name: str  
@@ -95,6 +96,7 @@ class Onread(BaseModel):
     name: str
     idx: int
     inread: int
+    author: str
     
 class Writers(BaseModel):
     id: int
@@ -103,6 +105,10 @@ class Writers(BaseModel):
     Fullname: str
     Phonenumber: str
     status: int
+
+class Stories(BaseModel):
+    id: int
+    book: str
     
 class Author(BaseModel):
     username: str
@@ -150,6 +156,9 @@ async def create_item(data: Login):
     password = data.password
     name = data.name
     data2 = list(collection.find({"name": name, "password": password}))
+    
+    if data2 == []:
+        return JSONResponse(status_code=200,content={"detail": "Not existed"})
     for item in data2:
         item["_id"] = str(item["_id"])  
     return data2[0]
@@ -158,6 +167,9 @@ async def create_item(data: Login):
 async def get_data():
     collection = db["Ebooks"]
     data = list(collection.find({}))
+    
+    if data == []: 
+        return {"detail":"wala"}
     for item in data:
         item["_id"] = str(item["_id"])
         item.pop("content", None)
@@ -214,9 +226,9 @@ async def create_folder(folder_name: FolderInput):
     # new_directory.mkdir(parents=True, exist_ok=True)
 
     if data1 == []:
-        data2 = collection.find({})
-        setid = len(data2)
-        collection.insert_one({"title": folder_name.title, "image": folder_name.base64img, "id": setid + 1 })
+        # data2 = collection.find({})
+        # setid = len(data2)
+        collection.insert_one({"title": folder_name.title, "image": folder_name.base64img, "id": folder_name.id,  })
         return {"message": f"Folder '{folder_name.title}' created successfully."}
     
     else:
@@ -315,11 +327,11 @@ async def read_root(data: Addbook):
             else:
                 collection.update_one(
                 {"id": data.id},
-                {"$push":{"Books": {"book": data.book, "status": 1 ,"idx": data.idx , "onread": False, "Done": False }}}
+                {"$push":{"Books": {"book": data.book, "status": 1 , "image": f"{Domain}/get_image/{data.book}" ,"idx": data.idx , "onread": False, "Done": False }}}
                 )
                 return{"detail": "Added but status 2 "} 
         else:
-            collection.insert_one({"id": data.id, "name": data.name,"Books": [{"book": data.book, "status": 1 ,"idx": data.idx , "onread": False, "Done": False }]})
+            collection.insert_one({"id": data.id, "name": data.name,"Books": [{"book": data.book, "status": 1, "image": f"{Domain}/get_image/{data.book}" ,"idx": data.idx , "onread": False, "Done": False }]})
             return{"detail": "Addedx"}  
        
     elif existing_data:
@@ -338,8 +350,12 @@ async def read_root(data: Onread):
     id = data.id
     book = data.book
     collection = db.get_collection("Addbook")
+    collection2 = db.get_collection("Writer")
     existing_data = list(collection.find({"Books.book": book,"id": id}))
+    existing_data2 = list(collection2.find({"username": book,"id": id}))
     for item in existing_data:
+        item["_id"] = str(item["_id"])  
+    for item in existing_data2:
         item["_id"] = str(item["_id"])  
     if existing_data == []:
         existing_books = list(collection.find({ "id": id}))
@@ -349,11 +365,16 @@ async def read_root(data: Onread):
         if existing_books:
             collection.update_one(
                 {"id": id},
-                {"$push":{"Books":{"book": data.book, "image": data.image , "status": 2, "inread": data.inread , "idx": data.idx , "onread": True, "Done": False }}}
+                {"$push":{"Books":{"book": data.book, "image": data.image , "status": 2, "inread": data.inread, "image": f"{Domain}/get_image/{data.book}" , "idx": data.idx , "onread": True, "Done": False }}}
             )
+            if existing_data2 != []:
+                collection2.update_one(
+                    {"id": id, "YourBook.bookshelf": data.book},
+                    {"$set":{"bookshelf.$.rating": existing_data2[0].get("rating") + 1 }}
+                )
             return {"detail": "existed"}
         else:
-            collection.insert_one({"id": id, "name": data.name,"Books": [{"book": data.book, "image": data.image , "status": 2, "inread": data.inread , "idx": data.idx , "onread": True, "Done": False }]})
+            collection.insert_one({"id": id, "name": data.name,"Books": [{"book": data.book, "image": data.image , "status": 2, "inread": data.inread , "image": f"{Domain}/get_image/{data.book}",  "idx": data.idx , "onread": True, "Done": False }]})
             return{"detail": "Added"}   
     if existing_data:
         collection.update_one(
@@ -392,7 +413,7 @@ async def read_root(data: Process):
     if existing_book:
         collection.update_one(
             {"id": id, "Books.book": book},
-            {"$set": {"Books.$.Done": True, "Books.$.inread": 0}}
+            {"$set": {"Books.$.Done": True, "Books.$.inread": 0 , "Books.$.onread": False}}
         )
         return {"detail": "Done"}
     
@@ -406,7 +427,20 @@ async def writer(data: Writers):
     else:
         collection.insert_one(data.dict())
     
-        return{"detail": "Congratulation"}    
+        return{"detail": "Congratulation"}  
+      
+@app.post('/YourBook')
+async def writer(data: Stories):
+    collection = db['Writer']
+    data1 = collection.find_one({"id": data.id})
+    
+    if data1:
+        collection.update_one(
+            {"id": data.id},
+            {"$push": {"YourBook":{"bookshelf": data.book, "rating": 0}}})
+        return {"detail": "Added"}
+    else:    
+        return{"detail": "Nodata"}    
     
 @app.post('/author')
 async def author(data: Author):

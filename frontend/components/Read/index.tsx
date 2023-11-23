@@ -25,26 +25,25 @@ function index() {
 
   useEffect(() => {
     const hgt = document.getElementById("story") as HTMLElement;
-    const innerhgt = hgt?.clientHeight;
     function handleScroll() {
       const distanceToBottom =
-        document.documentElement.scrollHeight -
-        (window.scrollY + window.innerHeight);
+        document.documentElement.scrollHeight - window.innerHeight;
 
-      const threshold = 1000;
-      if (distanceToBottom < threshold) {
+      if (distanceToBottom === Math.round(window.scrollY)) {
         if (
           Number(number) === FilteredBook[0].chapter?.length - 1 &&
           Response.length !== 0
         ) {
           Done({ id: Response.id, book: FilteredBook[0].filename });
-          console.log("Done");
+          console.log("DONE");
         }
       }
-      // console.log("here");
     }
-    if (Number(innerhgt) > window.innerHeight) {
+    if (Number(hgt?.clientHeight) > 500) {
+      // document.addEventListener("DOMContentLoaded", function () {
       window.addEventListener("scroll", handleScroll);
+      // });
+      console.log("tall");
     } else {
       if (
         Number(number) === FilteredBook[0].chapter?.length - 1 &&
@@ -53,23 +52,29 @@ function index() {
         Done({ id: Response.id, book: FilteredBook[0].filename });
         console.log("Done2");
       }
+      console.log("small");
     }
+
+    // console.log(document.documentElement.scrollHeight - window.innerHeight);
 
     //@ts-ignore
     dispatch(Book());
+
+    // const innerhgt = hgt?.clientHeight;
+    console.log(hgt?.clientHeight);
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, [number, Chapter]);
 
-  console.log(
-    Bookshelf.filter((data: any) => data.filename === Chapter)[0]?.chapter[
-      number
-    ]?.title,
+  // console.log(
+  //   Bookshelf.filter((data: any) => data.filename === Chapter)[0]?.chapter[
+  //     number
+  //   ]?.title,
 
-    "here2"
-  );
+  //   "here2"
+  // );
   const Href = sessionStorage.getItem("href");
 
   return (
@@ -94,6 +99,15 @@ function index() {
               if (Number(number) === 0) {
                 ("");
               } else {
+                Onread({
+                  id: Response.id,
+                  book: FilteredBook[0].filename,
+                  image: FilteredBook[0].image,
+                  name: Response.name,
+                  idx: Number(dex),
+                  inread: Number(number) - 1,
+                  author: FilteredBook[0].author,
+                });
                 router.push(
                   `/read?Book=${params}&data=${Number(number) - 1}&index=${dex}`
                 );
@@ -120,6 +134,7 @@ function index() {
                     name: Response.name,
                     idx: Number(dex),
                     inread: Number(number) + 1,
+                    author: FilteredBook[0].author,
                   });
                 }
                 router.push(
