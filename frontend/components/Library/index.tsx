@@ -97,15 +97,17 @@ export default function index() {
     part: number
   ) {
     let data3 = "";
-    const favorite = AddedBook.filter((item: any) =>
-      part === 1
-        ? item[sub] === item2
-          ? data
-          : ""
-        : item[sub] === item2 && item.onread === false
-    );
+    const favorite =
+      AddedBook &&
+      AddedBook.filter((item: any) =>
+        part === 1
+          ? item[sub] === item2
+            ? data
+            : ""
+          : item[sub] === item2 && item.onread === false
+      );
     if (data2 === true) {
-      data3 = favorite.length;
+      data3 = favorite && favorite.length;
     } else {
       data3 = favorite;
     }

@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Books, Onread, Done } from "@/api";
+import { Books, Onread, Done, Onrate } from "@/api";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
@@ -77,6 +77,8 @@ function index() {
   // );
   const Href = sessionStorage.getItem("href");
 
+  console;
+  console.log(FilteredBook[0].chapter[Number(number)]?.title);
   return (
     <>
       <Button
@@ -135,6 +137,12 @@ function index() {
                     idx: Number(dex),
                     inread: Number(number) + 1,
                     author: FilteredBook[0].author,
+                  });
+                  Onrate({
+                    id: FilteredBook[0].id,
+                    username: FilteredBook[0].author,
+                    book: FilteredBook[0].filename,
+                    reader: Response.id,
                   });
                 }
                 router.push(

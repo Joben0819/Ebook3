@@ -12,6 +12,7 @@ export type Upload = {
   filename: string;
   file: File | null;
   Author1: string;
+  Id: number;
 };
 
 export type ReadFiled = {
@@ -44,6 +45,12 @@ export type RemovedBook = {
   name: string;
 };
 
+export type Rating = {
+  id: number;
+  book: string;
+  username: string;
+};
+
 export type OnRead = {
   id: number;
   book: string;
@@ -64,6 +71,13 @@ export type OnWriter = {
 
 export type Authors = {
   username: string;
+};
+
+export type Rate = {
+  id: number;
+  username: string;
+  book: string;
+  reader: number;
 };
 
 export type OnDone = {

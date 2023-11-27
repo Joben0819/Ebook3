@@ -69,6 +69,7 @@ function index() {
       filename: val1,
       file: selectedFile,
       Author1: Author.toString(),
+      Id: Response.id,
     }).then((res) => {
       if (res.data.detail === "Added") {
         if (imageInput) {

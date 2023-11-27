@@ -1,5 +1,5 @@
 # import sys
-from fastapi import Depends, FastAPI, Header, Request, File, UploadFile, Form, HTTPException, Query
+from fastapi import Depends, FastAPI, File, UploadFile, Form, HTTPException, Depends
 from pymongo import MongoClient
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.security import OAuth2PasswordBearer
@@ -83,6 +83,13 @@ class Contents(BaseModel):
 class Process(BaseModel):
     id: int
     book: str
+    
+class Onrating(BaseModel):
+    id: int
+    book: str
+    username: str
+    reader:int
+    
 class Addbook(BaseModel):
     id: int
     book: str
@@ -255,7 +262,7 @@ async def create_text_file(text_data: TextFileInput):
     return {"status": "Added"}
 
 @app.post("/UploadFile/")
-async def create_upload_file(file: UploadFile = File(...), filename: str = Form(...), Author1: str = Form(...)):
+async def create_upload_file(file: UploadFile = File(...), filename: str = Form(...), Author1: str = Form(...), Id: str = Form(...)):
     collection = db.get_collection("Ebooks")
     result = collection.find_one({"filename": filename})
     
@@ -267,7 +274,7 @@ async def create_upload_file(file: UploadFile = File(...), filename: str = Form(
         for item in data2:
             item["_id"] = str(item["_id"]) 
         setid = len(data2)
-        collection.insert_one({"filename": filename, "content": file.file.read(), "image": f"{Domain}/get_image/{filename}", "id": setid + 1 , "author": Author1 })
+        collection.insert_one({"filename": filename, "content": file.file.read(), "image": f"{Domain}/get_image/{filename}", "id": Id , "author": Author1 })
         return{"detail": "Added"}
 
 # def get_file_content(file_id: str):
@@ -350,12 +357,8 @@ async def read_root(data: Onread):
     id = data.id
     book = data.book
     collection = db.get_collection("Addbook")
-    collection2 = db.get_collection("Writer")
     existing_data = list(collection.find({"Books.book": book,"id": id}))
-    existing_data2 = list(collection2.find({"username": book,"id": id}))
     for item in existing_data:
-        item["_id"] = str(item["_id"])  
-    for item in existing_data2:
         item["_id"] = str(item["_id"])  
     if existing_data == []:
         existing_books = list(collection.find({ "id": id}))
@@ -367,11 +370,6 @@ async def read_root(data: Onread):
                 {"id": id},
                 {"$push":{"Books":{"book": data.book, "image": data.image , "status": 2, "inread": data.inread, "image": f"{Domain}/get_image/{data.book}" , "idx": data.idx , "onread": True, "Done": False }}}
             )
-            if existing_data2 != []:
-                collection2.update_one(
-                    {"id": id, "YourBook.bookshelf": data.book},
-                    {"$set":{"bookshelf.$.rating": existing_data2[0].get("rating") + 1 }}
-                )
             return {"detail": "existed"}
         else:
             collection.insert_one({"id": id, "name": data.name,"Books": [{"book": data.book, "image": data.image , "status": 2, "inread": data.inread , "image": f"{Domain}/get_image/{data.book}",  "idx": data.idx , "onread": True, "Done": False }]})
@@ -382,6 +380,37 @@ async def read_root(data: Onread):
             {"$set": {"Books.$.onread": True, "Books.$.inread": data.inread }}
         )
         return {"detail": "added onread true"}
+    
+
+    
+@app.post("/Onrating")
+async def read_root(data: Onrating):
+    collection2 = db.get_collection("Writer")
+    collection1 = db.get_collection("Addbook")
+    existing_data1 = collection1.find_one({"id": data.reader,"Books.book": data.book})
+    if existing_data1:
+        return{"detail": "Already Added"}
+    else:
+        existing_data2 = list(collection2.find({"username": data.username,"id": data.id}))
+        for item in existing_data2:
+            item["_id"] = str(item["_id"])  
+        
+        if existing_data2 == []:
+            return {"detail": "null"}
+        else:
+            documents = []    
+            bookshelf = existing_data2[0].get("YourBook", [])
+            for book in bookshelf:
+                if "bookshelf" in book and book["bookshelf"] == data.book:
+                    documents.append(book)
+            if documents: 
+                collection2.update_one(
+                {"id": data.id, "YourBook.bookshelf": data.book},
+                {"$set":{"YourBook.$.rating": documents[0].get("rating") + 1 }}
+                )
+                return {"detail": "Success"}
+            else:
+                return{"detail": "Null"}    
     
 @app.post("/remove_book/")
 async def read_root(data: Removebook):

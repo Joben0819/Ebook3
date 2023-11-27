@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Bookstore from "@/assets/Books/Library.png";
 import Image from "next/image";
-import { Books, AddBook, RemoveBook } from "@/api";
+import { Books, AddBook, RemoveBook, Authored } from "@/api";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { setChapter, AddBooked, setModal } from "@/reducers/gameData";
@@ -42,7 +42,9 @@ function index() {
       //@ts-ignore
       dispatch(AddBooked(Response?.name, Response?.id));
     }
-
+    // Authored({ username: "Joben" }).then((res) => {
+    //   console.log(res, "author");
+    // });
     return () => {
       if (inputElement) {
         inputElement.removeEventListener("keydown", handleKeyPress);
@@ -106,16 +108,16 @@ function index() {
   //   items.inread !== 0 ? idx2 : idx2
   // );
 
-  const fetchData = async () => {
-    try {
-      //  const resultAction = await dispatch(getData());
-      //  const result = unwrapResult(resultAction);
-      console.log("Fetched Footer Data:");
-    } catch (error) {
-      console.error("Error fetching Footer Data:", error);
-    }
-    console.log("server-side");
-  };
+  // const fetchData = async () => {
+  //   try {
+  //     //  const resultAction = await dispatch(getData());
+  //     //  const result = unwrapResult(resultAction);
+  //     console.log("Fetched Footer Data:");
+  //   } catch (error) {
+  //     console.error("Error fetching Footer Data:", error);
+  //   }
+  //   console.log("server-side");
+  // };
   // console.log(AddedBook, "here");
   return (
     <div className="flex w-full items-center h-[90] flex-col gap-12">
@@ -130,9 +132,7 @@ function index() {
             fill
           />
         </div>
-        <h3 className="text-center" onClick={fetchData}>
-          Books
-        </h3>
+        <h3 className="text-center">Books</h3>
       </div>
       <div className="w-full h-full flex gap-y-8 flex-wrap gap-20 justify-center">
         {data1?.detail === "wala" ? (
@@ -170,12 +170,14 @@ function index() {
                 >
                   {data.filename}
                 </p>
-                <span
-                  className="text-[.8rem]"
+                <div
+                  className="text-[.8rem] flex justify-between w-full"
                   style={{ color: "rgb(172,172,172)" }}
                 >
-                  By:{data.author}
-                </span>
+                  <span>By:{data.author}</span>
+                  <span>Reader: 10</span>
+                </div>
+
                 <div
                   className="group/edit invisible absolute w-full flex-col h-full flex justify-center items-center group-hover/item:visible ..."
                   style={{ backgroundColor: "rgba(.5, .5, .5, .3)" }}
@@ -218,7 +220,9 @@ function index() {
                       if (data.chapter) {
                         router.push(
                           `/read?Book=${data.filename}&data=${
-                            AddedBook[InDex(data.filename)]?.inread || 0
+                            (AddedBook &&
+                              AddedBook[InDex(data.filename)]?.inread) ||
+                            0
                           }&index=${index}`
                         );
                         dispatch(setChapter(data.filename));
@@ -227,18 +231,24 @@ function index() {
                       }
                     }}
                   >
-                    {AddedBook.length === 0 ? (
-                      "Read"
-                    ) : AddedBook &&
+                    {AddedBook && AddedBook.length !== 0 ? (
+                      AddedBook &&
                       AddedBook[InDex(data.filename)]?.Done === true &&
                       AddedBook[InDex(data.filename)]?.onread === false ? (
-                      <>Done</>
-                    ) : AddedBook &&
-                      AddedBook[InDex(data.filename)]?.Done === false &&
-                      AddedBook[InDex(data.filename)]?.onread === false ? (
-                      <>Read</>
+                        <>Done</>
+                      ) : AddedBook &&
+                        AddedBook[InDex(data.filename)]?.Done === false &&
+                        AddedBook[InDex(data.filename)]?.onread === false ? (
+                        <>Read</>
+                      ) : AddedBook &&
+                        AddedBook[InDex(data.filename)]?.Done === false &&
+                        AddedBook[InDex(data.filename)]?.onread === true ? (
+                        <>Onread</>
+                      ) : (
+                        ""
+                      )
                     ) : (
-                      <>Onread</>
+                      <>Read</>
                     )}
                   </span>
                 </div>

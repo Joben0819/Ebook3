@@ -15,10 +15,10 @@ export default function Modal() {
       if (Modal === 3) {
         dispatch(setModal(1));
       }
-      console.log("Page has finished loading!");
+      // console.log("Page has finished loading!");
     };
   }, [Modal]);
-  console.log(Modal, "here");
+  // console.log(Modal, "here");
   useEffect(() => {
     if (Modal === 1) {
       setdata(1);

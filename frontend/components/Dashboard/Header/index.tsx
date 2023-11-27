@@ -36,7 +36,7 @@ function index(props: any) {
     router.push("/");
   };
   sessionStorage.setItem("href", window.location.pathname);
-  console.log(Response, "Response");
+  // console.log(Response, "Response");
   return (
     <div className="flex w-full justify-center gap-5 h-[10%] items-center">
       {Response.length !== 0 && (
