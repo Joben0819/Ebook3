@@ -122,7 +122,7 @@ export const Authoreds = (
   return (dispatch) => {
     console.log("name");
     Authored({ username: name }).then((res: any) => {
-      // console.log(res);
+      console.log(res, "here is the data");
       dispatch(setAuthor(res.data.username));
     });
   };

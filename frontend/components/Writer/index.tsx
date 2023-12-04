@@ -68,8 +68,8 @@ function index() {
     UploadFile({
       filename: val1,
       file: selectedFile,
-      Author1: Author.toString(),
-      Id: Response.id,
+      Author1: Response.name,
+      Id: Number(Response.id),
     }).then((res) => {
       if (res.data.detail === "Added") {
         if (imageInput) {
@@ -105,13 +105,12 @@ function index() {
         text_content: story?.value,
       }).then((res) => {
         if (res.data.status === "Added") {
-          //@ts-ignore
-          dispatch(Book());
           setTimeout(() => {
             setload(false);
             setchapter("");
-            setbook([]);
             story.value = "";
+            //@ts-ignore
+            dispatch(Book());
             alert("success");
           }, 2000);
         } else {
@@ -121,7 +120,7 @@ function index() {
     }
   };
 
-  console.log(Bookshelf, "part2");
+  console.log(filteredAuthor[1], index === "" ? "" : index, "part2");
 
   return (
     <div className="p-[2rem] h-[100%] relative">
@@ -209,7 +208,7 @@ function index() {
                     : filteredAuthor?.map((data: any, indx: number) => {
                         return (
                           <div
-                            key={data.id}
+                            key={indx}
                             onClick={() => (setbook(data), setPosition(indx))}
                             className="cursor-pointer"
                           >
@@ -295,7 +294,8 @@ function index() {
       </div>
       <div className="h-[40%] overflow-y-auto">
         <span>
-          {filteredAuthor[0]?.chapter === undefined
+          {filteredAuthor[position === "" ? "" : position]?.chapter ===
+          undefined
             ? ""
             : filteredAuthor[position === "" ? "" : position]?.chapter[
                 index === "" ? "" : index

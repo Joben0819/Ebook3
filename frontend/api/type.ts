@@ -12,7 +12,7 @@ export type Upload = {
   filename: string;
   file: File | null;
   Author1: string;
-  Id: number;
+  Id: any;
 };
 
 export type ReadFiled = {

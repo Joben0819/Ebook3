@@ -91,6 +91,7 @@ export function UploadFile(data: Upload) {
   formData.append("filename", data.filename);
   formData.append("file", data.file ?? "");
   formData.append("Author1", data.Author1);
+  formData.append("Id", data.Id);
   return api("/UploadFile", Post, formData);
 }
 

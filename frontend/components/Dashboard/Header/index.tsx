@@ -14,6 +14,7 @@ import {
   setAddedBook,
   setNavbar2,
   Authoreds,
+  setAuthor,
 } from "@/reducers/gameData";
 import { useDispatch, useSelector } from "react-redux";
 

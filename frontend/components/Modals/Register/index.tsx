@@ -93,6 +93,7 @@ export default function Register() {
           <Button
             onClick={() => {
               dispatch(setModal(1));
+              console.log("here");
             }}
           >
             Login

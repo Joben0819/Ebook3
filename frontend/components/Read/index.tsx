@@ -46,7 +46,7 @@ function index() {
       console.log("tall");
     } else {
       if (
-        Number(number) === FilteredBook[0].chapter?.length - 1 &&
+        Number(number) === FilteredBook[0]?.chapter?.length - 1 &&
         Response.length !== 0
       ) {
         Done({ id: Response.id, book: FilteredBook[0].filename });
@@ -77,8 +77,6 @@ function index() {
   // );
   const Href = sessionStorage.getItem("href");
 
-  console;
-  console.log(FilteredBook[0].chapter[Number(number)]?.title);
   return (
     <>
       <Button
@@ -90,9 +88,11 @@ function index() {
       </Button>
       <div className="text-center p-[3rem]">
         <h1 className="text-[1.5rem]">
-          {FilteredBook[0].chapter[Number(number)]?.title}
+          {FilteredBook[0]?.chapter[Number(number)]?.title}
         </h1>
-        <div id="story">{FilteredBook[0].chapter[Number(number)]?.content}</div>
+        <div id="story">
+          {FilteredBook[0]?.chapter[Number(number)]?.content}
+        </div>
 
         <div className="flex w-full justify-between ">
           <Button
@@ -120,7 +120,7 @@ function index() {
           </Button>
           <Button
             variant={
-              Number(number) === FilteredBook[0].chapter?.length - 1
+              Number(number) === FilteredBook[0]?.chapter?.length - 1
                 ? "secondary"
                 : "default"
             }

@@ -43,7 +43,10 @@ function index() {
       dispatch(AddBooked(Response?.name, Response?.id));
     }
     // Authored({ username: "Joben" }).then((res) => {
-    //   console.log(res, "author");
+    //   console.log(
+    //     res.data.filter((item: any) => item.bookshelf === "Frankenstein"),
+    //     "author"
+    //   );
     // });
     return () => {
       if (inputElement) {
@@ -118,7 +121,26 @@ function index() {
   //   }
   //   console.log("server-side");
   // };
-  // console.log(AddedBook, "here");
+  // console.log(Response, AddedBook, "here");
+
+  // async function Onrate(data: string) {
+  //   try {
+  //     const data1 = await Authored({ username: data });
+
+  //     if (!data1.ok) {
+  //       // Handle the case where the request was not successful
+  //       console.error(`Error fetching data. Status: ${data1.status}`);
+  //       return;
+  //     }
+
+  //     const data2 = await data1.json();
+  //     return data2;
+  //   } catch (error) {
+  //     // Handle other errors
+  //     console.error("Error fetching data:", error);
+  //   }
+  // }
+  console.log(filteredProducts, AddedBook);
   return (
     <div className="flex w-full items-center h-[90] flex-col gap-12">
       <div className="flex-col flex w-full items-center">
@@ -142,6 +164,7 @@ function index() {
         ) : (
           filteredProducts.map((data: any, index: number) => {
             Addition(data.filename, index);
+            // Onrate(data.author, data.filename);
             return (
               <div
                 className="w-44 relative flex items-center flex-col group/item hover:bg-slate-100 ..."
@@ -175,7 +198,7 @@ function index() {
                   style={{ color: "rgb(172,172,172)" }}
                 >
                   <span>By:{data.author}</span>
-                  <span>Reader: 10</span>
+                  <span>Reader: {data.reader}</span>
                 </div>
 
                 <div
@@ -231,24 +254,20 @@ function index() {
                       }
                     }}
                   >
-                    {AddedBook && AddedBook.length !== 0 ? (
-                      AddedBook &&
-                      AddedBook[InDex(data.filename)]?.Done === true &&
+                    {AddedBook &&
+                    AddedBook[InDex(data.filename)]?.Done === true &&
+                    AddedBook[InDex(data.filename)]?.onread === false ? (
+                      <>Done</>
+                    ) : AddedBook &&
+                      AddedBook[InDex(data.filename)]?.Done === false &&
                       AddedBook[InDex(data.filename)]?.onread === false ? (
-                        <>Done</>
-                      ) : AddedBook &&
-                        AddedBook[InDex(data.filename)]?.Done === false &&
-                        AddedBook[InDex(data.filename)]?.onread === false ? (
-                        <>Read</>
-                      ) : AddedBook &&
-                        AddedBook[InDex(data.filename)]?.Done === false &&
-                        AddedBook[InDex(data.filename)]?.onread === true ? (
-                        <>Onread</>
-                      ) : (
-                        ""
-                      )
-                    ) : (
                       <>Read</>
+                    ) : AddedBook &&
+                      AddedBook[InDex(data.filename)]?.Done === false &&
+                      AddedBook[InDex(data.filename)]?.onread === true ? (
+                      <>Onread</>
+                    ) : (
+                      "Read"
                     )}
                   </span>
                 </div>

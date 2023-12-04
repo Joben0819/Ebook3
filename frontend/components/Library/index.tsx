@@ -73,6 +73,9 @@ export default function index() {
     //@ts-ignore
     dispatch(Book());
 
+    //@ts-ignore
+    dispatch(Authoreds(Response.name));
+
     return () => {
       if (inputElement) {
         inputElement.removeEventListener("keydown", handleKeyPress);
@@ -165,7 +168,7 @@ export default function index() {
       }
     });
   }
-
+  console.log(Author, Response);
   return (
     <>
       <div className="h-full flex items-center flex-col  ">
