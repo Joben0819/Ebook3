@@ -22,7 +22,7 @@ export default function Modal() {
   // }, [Modal]);
   console.log(Modal, data, "here");
   useEffect(() => {
-    if (Response.length === 0) {
+    if (Response?.length === 0) {
       dispatch(setModal(1));
     } else {
       dispatch(setModal(3));

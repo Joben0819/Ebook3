@@ -98,10 +98,9 @@ export const AddBooked = (
 ): ThunkAction<void, RootState, null, AnyAction> => {
   return (dispatch) => {
     AddedBooks({ name, id }).then((res: any) => {
-      if (res.data.data === "None") {
+      if (res?.data?.data === "None") {
         dispatch(setAddedBook([]));
       } else {
-        // console.log(res);
         dispatch(setAddedBook(res?.data[0]?.Books));
       }
     });
@@ -120,10 +119,8 @@ export const Authoreds = (
   name: string
 ): ThunkAction<void, RootState, null, AnyAction> => {
   return (dispatch) => {
-    console.log("name");
     Authored({ username: name }).then((res: any) => {
-      console.log(res, "here is the data");
-      dispatch(setAuthor(res.data.username));
+      dispatch(setAuthor(res?.data?.username));
     });
   };
 };

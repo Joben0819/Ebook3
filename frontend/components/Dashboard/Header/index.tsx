@@ -40,7 +40,7 @@ function index(props: any) {
   // console.log(Response, "Response");
   return (
     <div className="flex w-full justify-center gap-5 h-[10%] items-center">
-      {Response.length !== 0 && (
+      {Response?.length !== 0 && (
         <div
           className="w-20 flex items-center gap-2 cursor-pointer "
           onClick={() => {

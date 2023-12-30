@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Bookstore from "@/assets/Books/Library.png";
+// import Logs from "@/assets/Books/Login.svga";
 import Image from "next/image";
 import { Books, AddBook, RemoveBook, Authored } from "@/api";
 import { useRouter } from "next/navigation";
@@ -153,6 +154,7 @@ function index() {
             quality={100}
             fill
           />
+          {/* <Image src={"./login.svga"} /> */}
         </div>
         <h3 className="text-center">Books</h3>
       </div>
