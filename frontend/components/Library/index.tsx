@@ -168,7 +168,24 @@ export default function index() {
       }
     });
   }
-  console.log(Author, Response);
+  console.log("in here", AddedBook, Bookshelf);
+
+  function OnAdd(name: any) {
+    const a = Bookshelf.filter(
+      (bookmark: any) => bookmark.filename === name.book
+    );
+    if (a[0]?.chapter) {
+      const index = Number(sessionStorage.getItem(`title-${name.book}`));
+      router.push(
+        `/read?Book=${a[0]?.filename}&data=${name?.inread}&index=${index}`
+      );
+      // dispatch(setChapter(a[0]?.filename));
+    } else {
+      alert("No Story yet");
+    }
+    console.log("on here", name);
+  }
+
   return (
     <>
       <div className="h-full flex items-center flex-col  ">
@@ -188,6 +205,15 @@ export default function index() {
             <div className="flex w-max space-x-4 p-4">
               {filteredProducts &&
                 filteredProducts.map((data: any, index: number) => {
+                  // {
+                  //   console.log(
+                  //     "on here",
+                  //     Bookshelf.filter(
+                  //       (bookmark: any) => bookmark.filename === data.book
+                  //     )
+                  //   );
+                  // }
+                  // console.log(filteredProducts);
                   return (
                     <div
                       className="w-44 relative h-52 flex items-center flex-col group/item hover:bg-slate-100 ..."
@@ -220,12 +246,7 @@ export default function index() {
                           className="group-hover/edit:text-gray-700 ..."
                           style={{ cursor: "pointer", color: "#fff" }}
                           onClick={() => {
-                            router.push(
-                              `/read?Book=${data.book}&data=0&index=${Number(
-                                sessionStorage.getItem(`title-${data.book}`)
-                              )}`
-                            ),
-                              dispatch(setChapter(data.book));
+                            OnAdd(data);
                           }}
                         >
                           {data.onread === true && data.Done === false ? (

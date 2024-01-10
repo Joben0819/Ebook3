@@ -20,7 +20,7 @@ export default function Modal() {
   //     // console.log("Page has finished loading!");
   //   };
   // }, [Modal]);
-  console.log(Modal, data, "here");
+  // console.log(Modal, data, "here");
   useEffect(() => {
     if (Response?.length === 0) {
       dispatch(setModal(1));

@@ -14,9 +14,8 @@ import { useGetDataMutation } from "@/api-rtk";
 function index() {
   const router = useRouter();
   const [part, separt] = useState<string | null>("");
-  const [data1, setdata] = useState<any>([]);
   const dispatch = useDispatch();
-  const { Response, AddedBook } = useSelector(
+  const { Response, AddedBook, Bookshelf } = useSelector(
     (state: RootState) => state.gameData
   );
   // const { data: activity_events = [], isLoading: isLoadingEvents } =
@@ -36,9 +35,6 @@ function index() {
       inputElement.addEventListener("keydown", handleKeyPress);
     }
 
-    Books({}).then((res) => {
-      setdata(res.data);
-    });
     if (Response?.length !== 0) {
       //@ts-ignore
       dispatch(AddBooked(Response?.name, Response?.id));
@@ -56,8 +52,8 @@ function index() {
     };
   }, []);
   const filteredProducts = part
-    ? data1.filter((product: any) => product.filename === part)
-    : data1;
+    ? Bookshelf.filter((product: any) => product.filename === part)
+    : Bookshelf;
 
   function Added(data: string, image: string, index: number) {
     AddBook({
@@ -141,7 +137,9 @@ function index() {
   //     console.error("Error fetching data:", error);
   //   }
   // }
-  console.log(filteredProducts, AddedBook);
+
+  // console.log("here1", filteredProducts, AddedBook, Bookshelf);
+
   return (
     <div className="flex w-full items-center h-[90] flex-col gap-12">
       <div className="flex-col flex w-full items-center">
@@ -159,7 +157,7 @@ function index() {
         <h3 className="text-center">Books</h3>
       </div>
       <div className="w-full h-full flex gap-y-8 flex-wrap gap-20 justify-center">
-        {data1?.detail === "wala" ? (
+        {Bookshelf?.detail === "wala" ? (
           <span>No Books</span>
         ) : filteredProducts.length === 0 && AddedBook ? (
           "Loading"
@@ -167,6 +165,10 @@ function index() {
           filteredProducts.map((data: any, index: number) => {
             Addition(data.filename, index);
             // Onrate(data.author, data.filename);
+            // console.log(
+            //   data.filename,
+            //   AddedBook.filter((product: any) => product.book === data.filename)
+            // );
             return (
               <div
                 className="w-44 relative flex items-center flex-col group/item hover:bg-slate-100 ..."
@@ -250,7 +252,7 @@ function index() {
                             0
                           }&index=${index}`
                         );
-                        dispatch(setChapter(data.filename));
+                        // dispatch(setChapter(data.filename));
                       } else {
                         alert("No Story Yet");
                       }

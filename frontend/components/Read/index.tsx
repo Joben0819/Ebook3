@@ -20,7 +20,7 @@ function index() {
   );
 
   const FilteredBook = Bookshelf.filter(
-    (data: any) => data.filename === Chapter
+    (data: any) => data.filename === params
   );
 
   useEffect(() => {
@@ -61,7 +61,7 @@ function index() {
     dispatch(Book());
 
     // const innerhgt = hgt?.clientHeight;
-    console.log(hgt?.clientHeight);
+    console.log(hgt?.clientHeight, "here 4");
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -76,7 +76,7 @@ function index() {
   //   "here2"
   // );
   const Href = sessionStorage.getItem("href");
-
+  console.log(params);
   return (
     <>
       <Button
