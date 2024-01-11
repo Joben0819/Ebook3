@@ -83,14 +83,14 @@ export default function index() {
     };
   }, []);
 
-  const InDex = (data: string) => {
-    const a = sessionStorage.getItem(`Library-${data}`);
-    if (a) {
-      return a;
-    } else {
-      return "";
-    }
-  };
+  // const InDex = (data: string) => {
+  //   const a = sessionStorage.getItem(`Library-${data}`);
+  //   if (a) {
+  //     return a;
+  //   } else {
+  //     return "";
+  //   }
+  // };
 
   function Filtered(
     data: any,
@@ -168,7 +168,7 @@ export default function index() {
       }
     });
   }
-  console.log("in here", AddedBook, Bookshelf);
+  // console.log("in here", AddedBook, Bookshelf);
 
   function OnAdd(name: any) {
     const a = Bookshelf.filter(
@@ -183,7 +183,7 @@ export default function index() {
     } else {
       alert("No Story yet");
     }
-    console.log("on here", name);
+    // console.log("on here", name);
   }
 
   return (

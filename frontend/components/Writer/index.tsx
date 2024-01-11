@@ -180,20 +180,19 @@ function index() {
           </div>
         </div>
       )}
-      <div className="h-[60%]">
-        <div className="w-full flex gap-[1rem] h-[10%] justify-between">
-          <div className="w-[10%]">
-            <Button
-              disabled={load}
-              className="bg-blue-200"
-              onClick={() => {
-                router.push("/Library");
-              }}
-            >
-              Back
-            </Button>
-          </div>
-          <div className="h-full flex w-[50%] gap-[1.5rem] ">
+      <div className="h-[70%] flex flex-col justify-between">
+        <div className="w-full flex gap-[1rem]  justify-between">
+          <Button
+            disabled={load}
+            className="bg-blue-200"
+            onClick={() => {
+              router.push("/Library");
+            }}
+          >
+            Back
+          </Button>
+
+          <div className="h-full flex w-[50%] justify-between ">
             <DropdownMenu>
               <DropdownMenuTrigger>
                 {book.length === 0 ? "Open" : book?.filename}
@@ -255,7 +254,7 @@ function index() {
             Add Book
           </Button>
         </div>
-        <div className="w-full h-[70%] mt-[2rem]">
+        <div className="w-full h-[70%] ">
           <textarea
             className="w-full h-full bg-gray-300"
             name=""
@@ -264,35 +263,33 @@ function index() {
             // rows="10"
           />
         </div>
-        <div className="h-[10]">
-          <ScrollArea className="w-full whitespace-nowrap rounded-md border">
-            <div className="flex w-max space-x-4 p-4">
-              {filteredAuthor[position === "" ? "" : position]?.chapter?.map(
-                (data: any, idx: number) => {
-                  return (
-                    <div
-                      key={idx}
-                      onClick={() => {
-                        setindex(idx);
-                      }}
-                      className="cursor-pointer"
-                      style={{
-                        borderBottom: index === idx ? "solid 1px blue" : "",
-                      }}
-                    >
-                      {data.title.length <= 9
-                        ? data.title
-                        : data.title.substring(0, 9) + "..."}
-                    </div>
-                  );
-                }
-              )}
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        </div>
+        <ScrollArea className="w-full whitespace-nowrap rounded-md border">
+          <div className="flex w-max space-x-4 p-4">
+            {filteredAuthor[position === "" ? "" : position]?.chapter?.map(
+              (data: any, idx: number) => {
+                return (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      setindex(idx);
+                    }}
+                    className="cursor-pointer"
+                    style={{
+                      borderBottom: index === idx ? "solid 1px blue" : "",
+                    }}
+                  >
+                    {data.title.length <= 9
+                      ? data.title
+                      : data.title.substring(0, 9) + "..."}
+                  </div>
+                );
+              }
+            )}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </div>
-      <div className="h-[40%] overflow-y-auto">
+      <div className="h-[30%] overflow-y-auto">
         <span>
           {filteredAuthor[position === "" ? "" : position]?.chapter ===
           undefined

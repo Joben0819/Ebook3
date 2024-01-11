@@ -56,7 +56,7 @@ export default function Register() {
       className="w-full h-full items-center flex justify-center fixed"
       style={{ backgroundColor: "rgba(.5,.5,.5,0.3)", zIndex: "1" }}
     >
-      <Card className="h-80 w-80">
+      <Card className="w-80 relative">
         <div
           onClick={() => dispatch(setModal(3))}
           className="absolute right-[13px] cursor-pointer"

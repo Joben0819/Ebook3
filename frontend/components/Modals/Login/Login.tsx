@@ -69,7 +69,7 @@ export default function Login() {
       className="w-full h-full items-center flex justify-center fixed"
       style={{ backgroundColor: "rgba(.5,.5,.5,0.3)", zIndex: "2" }}
     >
-      <Card className="h-64 w-80 relative">
+      <Card className=" w-80 relative">
         <div
           onClick={() => dispatch(setModal(3))}
           className="absolute right-[13px] cursor-pointer"

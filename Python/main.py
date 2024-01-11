@@ -188,21 +188,6 @@ async def get_data():
 
     return JSONResponse(content=data)
 
-# @app.get("/example/")
-# async def read_user_agent(request: Request, token: str = Header(None)):
-#     user_id = request.cookies.get("key")
-#     user_info = decode_token(token , user_id)
-#     random_float = random.randint(1, 100)
-#     return {"token": f'{Port}/'}
-
-# @app.get("/set-cookie/")
-# async def set_cookie(request: Request):
-#     random_float = F'{random.randint(1, 100)}'
-#     user_id = f'{request.cookies.get("key")}'
-#     response2 = JSONResponse(content={"message": user_id})
-#     response2.set_cookie(key="key", value=random_float)  
-#     return response2
-
 @app.get("/get_user_data/")
 async def get_data():
     collection = db["Users"]
@@ -256,8 +241,12 @@ async def create_text_file(text_data: TextFileInput):
     if existing_user is None:
         return { "status": False, "Message": "Wrong Data"}
     
-    if existing_data:
-        return{"message": "Already had a chapter title"}
+    if existing_data:       
+        collection.update_one(
+            {"filename": Book_store, "chapter.title": file_name },
+            {"$set": {"chapter.$.title": file_name , "chapter.$.content": text_content  }}
+        )            
+        return{"status": "Added"}
     
     collection.update_one(
     {"filename": Book_store},
@@ -271,13 +260,14 @@ async def create_upload_file(file: UploadFile = File(...), filename: str = Form(
     result = collection.find_one({"filename": filename})
     
     if result:
-        return {"detail": "Already Added"}
+        collection.insert_one({"filename": filename, "content": file.file.read(), "image": f"{Domain}/get_image/{filename}", "id": Id , "author": Author1, "reader": 0 , "rating": 0  })
+        return {"detail": "Edited the Chapter"}
     
     else:
-        data2 = list(collection.find({}))
-        for item in data2:
-            item["_id"] = str(item["_id"]) 
-        setid = len(data2)
+        # data2 = list(collection.find({}))
+        # for item in data2:
+        #     item["_id"] = str(item["_id"]) 
+        # setid = len(data2)
         collection.insert_one({"filename": filename, "content": file.file.read(), "image": f"{Domain}/get_image/{filename}", "id": Id , "author": Author1, "reader": 0 , "rating": 0  })
         return{"detail": "Added"}
     
@@ -393,7 +383,7 @@ async def read_root(data: Onread):
     if existing_data:
         collection.update_one(
             {"id": id, "Books.book": book},
-            {"$set": {"Books.$.onread": True, "Books.$.inread": data.inread }}
+            {"$set": {"Books.$.onread": True, "Books.$.inread": data.inread, "Books.$.state": 1 }}
         )
         return {"detail": "added onread true"}
     

@@ -66,7 +66,7 @@ function index() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [number, Chapter]);
+  }, [number]);
 
   // console.log(
   //   Bookshelf.filter((data: any) => data.filename === Chapter)[0]?.chapter[
@@ -76,11 +76,11 @@ function index() {
   //   "here2"
   // );
   const Href = sessionStorage.getItem("href");
-  console.log(params);
+  console.log(FilteredBook, Response.id);
   return (
     <>
       <Button
-        onClick={() => router.push(`${Href}`)}
+        onClick={() => router.push(`/`)}
         className="ml-[2rem] cursor-pointer"
         id="element"
       >
@@ -94,7 +94,7 @@ function index() {
           {FilteredBook[0]?.chapter[Number(number)]?.content}
         </div>
 
-        <div className="flex w-full justify-between ">
+        <div className="flex w-full justify-between">
           <Button
             variant={Number(number) === 0 ? "secondary" : "default"}
             onClick={() => {

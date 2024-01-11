@@ -6,7 +6,12 @@ import Image from "next/image";
 import { Books, AddBook, RemoveBook, Authored } from "@/api";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { setChapter, AddBooked, setModal } from "@/reducers/gameData";
+import {
+  setChapter,
+  AddBooked,
+  setModal,
+  Authoreds,
+} from "@/reducers/gameData";
 import { RootState } from "@/store";
 import { Item } from "@radix-ui/react-dropdown-menu";
 import { useGetDataMutation } from "@/api-rtk";
@@ -15,7 +20,7 @@ function index() {
   const router = useRouter();
   const [part, separt] = useState<string | null>("");
   const dispatch = useDispatch();
-  const { Response, AddedBook, Bookshelf } = useSelector(
+  const { Response, AddedBook, Bookshelf, Author } = useSelector(
     (state: RootState) => state.gameData
   );
   // const { data: activity_events = [], isLoading: isLoadingEvents } =
@@ -138,7 +143,7 @@ function index() {
   //   }
   // }
 
-  // console.log("here1", filteredProducts, AddedBook, Bookshelf);
+  // console.log("here1", filteredProducts, AddedBook, Bookshelf, Author);
 
   return (
     <div className="flex w-full items-center h-[90] flex-col gap-12">
