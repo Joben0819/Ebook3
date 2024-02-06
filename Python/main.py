@@ -221,7 +221,7 @@ async def create_folder(folder_name: FolderInput):
     for item in data1:
         item["_id"] = str(item["_id"]) 
     # new_directory = Path(new_folder_path)
-    # new_directory.mkdir(parents=True, exist_ok=True)
+    # new_directory.mkdir(parents=True, exist_ok=True) hello world
 
     if data1 == []:
         collection.insert_one({"title": folder_name.title, "image": folder_name.base64img, "id": folder_name.id,  })

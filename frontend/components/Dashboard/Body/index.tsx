@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Bookstore from "@/assets/Books/Library.png";
 // import Logs from "@/assets/Books/Login.svga";
 import Image from "next/image";
-import { Books, AddBook, RemoveBook, Authored } from "@/api";
+import { Books, AddBook, RemoveBook, Authored, AccountInfo } from "@/api";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -11,6 +11,7 @@ import {
   AddBooked,
   setModal,
   Authoreds,
+  Book,
 } from "@/reducers/gameData";
 import { RootState } from "@/store";
 import { Item } from "@radix-ui/react-dropdown-menu";
@@ -50,12 +51,22 @@ function index() {
     //     "author"
     //   );
     // });
+    //@ts-ignore
+    dispatch(Book());
     return () => {
       if (inputElement) {
         inputElement.removeEventListener("keydown", handleKeyPress);
       }
     };
   }, []);
+
+  useEffect(() => {
+    console.log();
+    AccountInfo({}).then((res) => {
+      console.log(res?.data, "data");
+    });
+  }, []);
+
   const filteredProducts = part
     ? Bookshelf.filter((product: any) => product.filename === part)
     : Bookshelf;
@@ -143,7 +154,7 @@ function index() {
   //   }
   // }
 
-  // console.log("here1", filteredProducts, AddedBook, Bookshelf, Author);
+  // console.log("here1", filteredProducts, AddedBook, Bookshelf);
 
   return (
     <div className="flex w-full items-center h-[90] flex-col gap-12">
@@ -162,12 +173,12 @@ function index() {
         <h3 className="text-center">Books</h3>
       </div>
       <div className="w-full h-full flex gap-y-8 flex-wrap gap-20 justify-center">
-        {Bookshelf?.detail === "wala" ? (
+        {filteredProducts?.detail === "wala" ? (
           <span>No Books</span>
-        ) : filteredProducts.length === 0 && AddedBook ? (
+        ) : Bookshelf?.length === 0 && AddedBook ? (
           "Loading"
         ) : (
-          filteredProducts.map((data: any, index: number) => {
+          filteredProducts?.map((data: any, index: number) => {
             Addition(data.filename, index);
             // Onrate(data.author, data.filename);
             // console.log(

@@ -110,7 +110,7 @@ export const AddBooked = (
 export const Book = (): ThunkAction<void, RootState, null, AnyAction> => {
   return (dispatch) => {
     Books({}).then((res) => {
-      dispatch(setBookshelf(res.data));
+      dispatch(setBookshelf(res?.data));
     });
   };
 };

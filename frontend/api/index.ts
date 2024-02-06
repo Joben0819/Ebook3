@@ -16,8 +16,14 @@ import {
   Stories,
   Rate,
 } from "./type";
+import { useNavigate } from "react-router-dom";
+// import { useRouter } from "next/router";
+// import React from "react";
+// import { setResponse } from "@/reducers/gameData";
 
-export const Domain = "http://127.0.0.1:8000";
+let local = 2;
+export const Domain =
+  local === 1 ? "http://52.90.85.88:8080" : "http://127.0.0.1:8000";
 
 var Post = "POST";
 var Get = "GET";
@@ -32,6 +38,7 @@ export const api = async (
   method: string,
   data: any
 ): Promise<any> => {
+  // const router = useNavigate();
   let Content = "";
   let json = true;
   if (data instanceof FormData) {
@@ -44,8 +51,9 @@ export const api = async (
   const url = Domain + param;
   var globalHeaders = {
     "front-host": url,
-    // dev: 2,
-    // version: 2,
+    dev: 10,
+    version:
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkiOiJzYW1wbGUxOCJ9.DYVjTK9_-8y-L6SZSD-JT4fxF34Rahwl2hII4mz3vYo",
     "Content-Type": Content,
   };
   try {
@@ -54,21 +62,29 @@ export const api = async (
       url: url,
       headers: {
         "front-host": globalHeaders["front-host"],
-        // dev: globalHeaders.dev.toString(),
-        // version: globalHeaders.version.toString(),
+        token: globalHeaders["version"],
+        id: globalHeaders["dev"],
         "Content-Type": globalHeaders["Content-Type"],
       },
       data: json === true ? JSON.stringify(data) : data,
       // withCredentials: true,
     };
+    try {
+      const response: AxiosResponse = await axiosInstance(axiosConfig);
+      console.log(response.status, "api");
+      if (response.status != 200) {
+        throw new Error("Request failed");
+      }
 
-    const response: AxiosResponse = await axiosInstance(axiosConfig);
-
-    if (response.status !== 200) {
-      throw new Error("Request failed");
+      return response;
+    } catch (error) {
+      // localStorage.setItem("data", "true");
+      // if (localStorage.getItem("data") !== sessionStorage.getItem("data2")) {
+      //   window.location.href = "/?code=401";
+      //   sessionStorage.setItem("data", "true");
+      // }
+      console.log("error occured", error);
     }
-
-    return response;
   } catch (error) {
     return null;
   }
@@ -104,7 +120,7 @@ export function CreateFile(data: CreateFiled) {
 }
 
 export function AddedBooks(data: AddedBook) {
-  return api("/Added_books", Post, data);
+  return api("/Added_books/", Post, data);
 }
 
 export function AddBook(data: AddBooks) {
@@ -137,4 +153,8 @@ export function BookSheleves(data: Stories) {
 
 export function Onrate(data: Rate) {
   return api("/Onrating", Post, data);
+}
+
+export function AccountInfo(data: {}) {
+  return api("/AccountInfo/", Post, data);
 }
