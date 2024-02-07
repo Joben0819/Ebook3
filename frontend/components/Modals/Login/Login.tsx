@@ -43,16 +43,15 @@ export default function Login() {
           const ids = res.data.id;
           //@ts-ignore
           // dispatch(AddBooked(name, ids));
-          setTimeout(() => {
-            setstate(false);
-            sessionStorage.setItem("data", "meron");
-            dispatch(setModal(4)),
-              //@ts-ignore
-              dispatch(AddBooked(name, ids));
-            dispatch(setResponse(res.data));
+          // setTimeout(() => {
+          setstate(false);
+          sessionStorage.setItem("token", res.data.token);
+          sessionStorage.setItem("id", res.data.id);
+          dispatch(setModal(4)),
             //@ts-ignore
-            dispatch(Authoreds(name));
-          }, 400);
+            dispatch(AddBooked(name, ids));
+          // }, 400);
+          window.location.href = "http://localhost:3001/";
         }
       } else {
         setstate(true);

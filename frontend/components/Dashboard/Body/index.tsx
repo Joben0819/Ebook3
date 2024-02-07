@@ -12,6 +12,7 @@ import {
   setModal,
   Authoreds,
   Book,
+  setResponse,
 } from "@/reducers/gameData";
 import { RootState } from "@/store";
 import { Item } from "@radix-ui/react-dropdown-menu";
@@ -61,10 +62,13 @@ function index() {
   }, []);
 
   useEffect(() => {
-    console.log();
-    AccountInfo({}).then((res) => {
-      console.log(res?.data, "data");
-    });
+    if (sessionStorage.getItem("token")) {
+      AccountInfo({}).then((res) => {
+        dispatch(setResponse(res?.data));
+        //@ts-ignore
+        dispatch(Authoreds(res?.data?.name));
+      });
+    }
   }, []);
 
   const filteredProducts = part

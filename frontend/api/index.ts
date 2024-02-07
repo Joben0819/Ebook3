@@ -28,8 +28,10 @@ export const Domain =
 var Post = "POST";
 var Get = "GET";
 
+// var Url401 = window.location.href + "/?code=401";
+
 const axiosInstance = axios.create({
-  // withCredentials: true,
+  withCredentials: true,
   // maxRedirects: 10,
 });
 
@@ -51,43 +53,41 @@ export const api = async (
   const url = Domain + param;
   var globalHeaders = {
     "front-host": url,
-    dev: 10,
-    version:
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkiOiJzYW1wbGUxOCJ9.DYVjTK9_-8y-L6SZSD-JT4fxF34Rahwl2hII4mz3vYo",
+    id: Number(sessionStorage.getItem("id")),
+    token: sessionStorage.getItem("token"),
     "Content-Type": Content,
   };
+  // try {
+  const axiosConfig: AxiosRequestConfig = {
+    method: method,
+    url: url,
+    headers: {
+      "front-host": globalHeaders["front-host"],
+      token: globalHeaders["token"],
+      id: globalHeaders["id"],
+      "Content-Type": globalHeaders["Content-Type"],
+    },
+    data: json === true ? JSON.stringify(data) : data,
+    // withCredentials: true,
+  };
   try {
-    const axiosConfig: AxiosRequestConfig = {
-      method: method,
-      url: url,
-      headers: {
-        "front-host": globalHeaders["front-host"],
-        token: globalHeaders["version"],
-        id: globalHeaders["dev"],
-        "Content-Type": globalHeaders["Content-Type"],
-      },
-      data: json === true ? JSON.stringify(data) : data,
-      // withCredentials: true,
-    };
-    try {
-      const response: AxiosResponse = await axiosInstance(axiosConfig);
-      console.log(response.status, "api");
-      if (response.status != 200) {
-        throw new Error("Request failed");
-      }
-
-      return response;
-    } catch (error) {
-      // localStorage.setItem("data", "true");
-      // if (localStorage.getItem("data") !== sessionStorage.getItem("data2")) {
-      //   window.location.href = "/?code=401";
-      //   sessionStorage.setItem("data", "true");
-      // }
-      console.log("error occured", error);
+    const response: AxiosResponse = await axiosInstance(axiosConfig);
+    console.log(response.status, "api");
+    if (response.status != 200) {
+      console.log("here");
+      throw new Error("Request failed");
     }
+
+    return response;
   } catch (error) {
-    return null;
+    if (window.location.origin + "/?code=401" !== window.location.href) {
+      window.location.href = "/?code=401";
+    }
+    console.log("error occured", window.location.href);
   }
+  // } catch (error) {
+  //   return null;
+  // }
 };
 
 export function Registered(data: Login) {
