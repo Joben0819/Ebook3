@@ -43,15 +43,17 @@ export default function Login() {
           const ids = res.data.id;
           //@ts-ignore
           // dispatch(AddBooked(name, ids));
-          // setTimeout(() => {
-          setstate(false);
-          sessionStorage.setItem("token", res.data.token);
-          sessionStorage.setItem("id", res.data.id);
-          dispatch(setModal(4)),
-            //@ts-ignore
-            dispatch(AddBooked(name, ids));
-          // }, 400);
-          window.location.href = "http://localhost:3001/";
+          setTimeout(() => {
+            setstate(false);
+            sessionStorage.setItem("token", res.data.token);
+            sessionStorage.setItem("id", res.data.id);
+            dispatch(setModal(4)),
+              //@ts-ignore
+              dispatch(AddBooked(name, ids.toString()));
+            dispatch(setResponse(res.data));
+            // @ts-ignore
+            dispatch(Authoreds(name));
+          }, 400);
         }
       } else {
         setstate(true);

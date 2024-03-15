@@ -44,7 +44,7 @@ function index() {
 
     if (Response?.length !== 0) {
       //@ts-ignore
-      dispatch(AddBooked(Response?.name, Response?.id));
+      dispatch(AddBooked());
     }
     // Authored({ username: "Joben" }).then((res) => {
     //   console.log(
@@ -64,6 +64,7 @@ function index() {
   useEffect(() => {
     if (sessionStorage.getItem("token")) {
       AccountInfo({}).then((res) => {
+        console.log(res, "Account");
         dispatch(setResponse(res?.data));
         //@ts-ignore
         dispatch(Authoreds(res?.data?.name));
@@ -85,12 +86,12 @@ function index() {
     }).then((res) => {
       if (res.data.detail === "Added") {
         //@ts-ignore
-        dispatch(AddBooked(Response.name, Response.id));
+        dispatch(AddBooked(Response.name, Response.id.toString()));
         alert(res.data.detail);
       } else {
         alert(res.data.detail);
         //@ts-ignore
-        dispatch(AddBooked(Response.name, Response.id));
+        dispatch(AddBooked(Response.name, Response.id.toString()));
       }
     });
   }
@@ -100,7 +101,7 @@ function index() {
       (res) => {
         sessionStorage.removeItem(`Library-${data}`);
         //@ts-ignore
-        dispatch(AddBooked(Response.name, Response.id));
+        dispatch(AddBooked(Response.name, Response.id.toString()));
         alert(data);
       }
     );

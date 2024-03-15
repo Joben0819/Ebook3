@@ -67,6 +67,8 @@ export default function index() {
       inputElement.addEventListener("keydown", handleKeyPress);
     }
 
+    // //@ts-ignore
+    // dispatch(AddBooked(Response.name, Response.id.toString()));
     //@ts-ignore
     dispatch(AddBooked(Response.name, Response.id));
 
@@ -140,7 +142,7 @@ export default function index() {
       (res) => {
         sessionStorage.removeItem(`Library-${datas}`);
         //@ts-ignore
-        dispatch(AddBooked(Response.name, Response.id));
+        dispatch(AddBooked(Response.name, Response.id.toString()));
         alert("Removed");
       }
     );

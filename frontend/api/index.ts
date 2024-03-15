@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 // import React from "react";
 // import { setResponse } from "@/reducers/gameData";
 
-let local = 2;
+let local = 1;
 export const Domain =
   local === 1 ? "http://52.90.85.88:8080" : "http://127.0.0.1:8000";
 

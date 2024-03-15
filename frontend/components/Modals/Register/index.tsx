@@ -38,7 +38,7 @@ export default function Register() {
             sessionStorage.setItem("data", "meron");
             dispatch(setModal(3)),
               //@ts-ignore
-              dispatch(AddBooked(name, ids));
+              dispatch(AddBooked(name, ids.toString()));
             dispatch(setResponse(res.data[0]));
           }, 800);
         }

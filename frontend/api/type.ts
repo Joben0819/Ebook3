@@ -28,7 +28,7 @@ export type CreateFiled = {
 
 export type AddedBook = {
   name: string;
-  id: number;
+  id: string;
 };
 
 export type AddBooks = {

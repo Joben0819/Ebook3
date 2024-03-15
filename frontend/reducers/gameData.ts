@@ -94,7 +94,7 @@ export default gameDataSlice.reducer;
 
 export const AddBooked = (
   name: string,
-  id: number
+  id: string
 ): ThunkAction<void, RootState, null, AnyAction> => {
   return (dispatch) => {
     AddedBooks({ name, id }).then((res: any) => {

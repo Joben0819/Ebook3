@@ -47,7 +47,7 @@ function index(props: any) {
             sessionStorage.clear(),
               dispatch(setModal(1)),
               //@ts-ignore
-              dispatch(AddBooked("", 0));
+              dispatch(AddBooked("", (0).toString()));
             dispatch(setChapter([]));
             dispatch(setResponse([]));
             dispatch(setAddedBook([]));
