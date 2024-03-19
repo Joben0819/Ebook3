@@ -26,12 +26,12 @@ interface Author {
   _id: string;
 }
 
-function index() {
+function Writer() {
   const [form, setform] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [load, setload] = useState(false);
   const [title, settitle] = useState("");
-  const [index, setindex] = useState<any>("");
+  const [idx, setidx] = useState<any>("");
   const [chapter, setchapter] = useState("");
   const [book, setbook] = useState<any>([]);
   const [writer, setwriter] = useState([]);
@@ -119,8 +119,6 @@ function index() {
       });
     }
   };
-
-  console.log(filteredAuthor[1], index === "" ? "" : index, "part2");
 
   return (
     <div className="p-[2rem] h-[100%] relative">
@@ -266,16 +264,16 @@ function index() {
         <ScrollArea className="w-full whitespace-nowrap rounded-md border">
           <div className="flex w-max space-x-4 p-4">
             {filteredAuthor[position === "" ? "" : position]?.chapter?.map(
-              (data: any, idx: number) => {
+              (data: any, index: number) => {
                 return (
                   <div
-                    key={idx}
+                    key={index}
                     onClick={() => {
-                      setindex(idx);
+                      setidx(index);
                     }}
                     className="cursor-pointer"
                     style={{
-                      borderBottom: index === idx ? "solid 1px blue" : "",
+                      borderBottom: idx === index ? "solid 1px blue" : "",
                     }}
                   >
                     {data.title.length <= 9
@@ -295,7 +293,7 @@ function index() {
           undefined
             ? ""
             : filteredAuthor[position === "" ? "" : position]?.chapter[
-                index === "" ? "" : index
+                idx === "" ? "" : idx
               ]?.content}
         </span>
       </div>
@@ -303,4 +301,4 @@ function index() {
   );
 }
 
-export default index;
+export default Writer;
