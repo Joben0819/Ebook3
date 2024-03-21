@@ -8,10 +8,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
 import { Book } from "@/reducers/gameData";
 
-function index() {
+function Read() {
   const searchParams = useSearchParams();
   const params = searchParams.get("Book") || "";
-  const dex = searchParams.get("index");
+  const dex = searchParams.get("index") || "";
   const number = searchParams.get("data") || 0;
   const router = useRouter();
   const dispatch = useDispatch();
@@ -159,4 +159,4 @@ function index() {
   );
 }
 
-export default index;
+export default Read;

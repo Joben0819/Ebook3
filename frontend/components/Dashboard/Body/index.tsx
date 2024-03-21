@@ -16,11 +16,9 @@ import {
 } from "@/reducers/gameData";
 import { RootState } from "@/store";
 import { Item } from "@radix-ui/react-dropdown-menu";
-import { useGetDataMutation } from "@/api-rtk";
 
-function index() {
-  const router = useRouter();
-  const [part, separt] = useState<string | null>("");
+function Body() {
+  const [part, sePart] = useState<string>("");
   const dispatch = useDispatch();
   const { Response, AddedBook, Bookshelf, Author } = useSelector(
     (state: RootState) => state.gameData
@@ -34,7 +32,7 @@ function index() {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "Enter") {
         if (inputElement) {
-          separt(inputElement?.value);
+          sePart(inputElement?.value);
         }
       }
     };
@@ -42,16 +40,11 @@ function index() {
       inputElement.addEventListener("keydown", handleKeyPress);
     }
 
-    if (Response?.length !== 0) {
+    if (Response) {
       //@ts-ignore
       dispatch(AddBooked());
     }
-    // Authored({ username: "Joben" }).then((res) => {
-    //   console.log(
-    //     res.data.filter((item: any) => item.bookshelf === "Frankenstein"),
-    //     "author"
-    //   );
-    // });
+
     //@ts-ignore
     dispatch(Book());
     return () => {
@@ -59,18 +52,18 @@ function index() {
         inputElement.removeEventListener("keydown", handleKeyPress);
       }
     };
-  }, []);
+  }, [Response]);
 
-  useEffect(() => {
-    if (sessionStorage.getItem("token")) {
-      AccountInfo({}).then((res) => {
-        console.log(res, "Account");
-        dispatch(setResponse(res?.data));
-        //@ts-ignore
-        dispatch(Authoreds(res?.data?.name));
-      });
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (sessionStorage.getItem("token")) {
+  //     AccountInfo({}).then((res) => {
+  //       // console.log(res, "Account");
+  //       dispatch(setResponse(res?.data));
+  //       //@ts-ignore
+  //       dispatch(Authoreds(res?.data?.name));
+  //     });
+  //   }
+  // }, []);
 
   const filteredProducts = part
     ? Bookshelf.filter((product: any) => product.filename === part)
@@ -124,42 +117,7 @@ function index() {
     }
   };
 
-  // console.log(data1?.detail, AddedBook);
-  // const example1 = AddedBook.filter((items: any, idx2: number) =>
-  //   items.inread !== 0 ? idx2 : idx2
-  // );
-
-  // const fetchData = async () => {
-  //   try {
-  //     //  const resultAction = await dispatch(getData());
-  //     //  const result = unwrapResult(resultAction);
-  //     console.log("Fetched Footer Data:");
-  //   } catch (error) {
-  //     console.error("Error fetching Footer Data:", error);
-  //   }
-  //   console.log("server-side");
-  // };
-  // console.log(Response, AddedBook, "here");
-
-  // async function Onrate(data: string) {
-  //   try {
-  //     const data1 = await Authored({ username: data });
-
-  //     if (!data1.ok) {
-  //       // Handle the case where the request was not successful
-  //       console.error(`Error fetching data. Status: ${data1.status}`);
-  //       return;
-  //     }
-
-  //     const data2 = await data1.json();
-  //     return data2;
-  //   } catch (error) {
-  //     // Handle other errors
-  //     console.error("Error fetching data:", error);
-  //   }
-  // }
-
-  // console.log("here1", filteredProducts, AddedBook, Bookshelf);
+  console.log(AddedBook, "Response");
 
   return (
     <div className="flex w-full items-center h-[90] flex-col gap-12">
@@ -185,11 +143,6 @@ function index() {
         ) : (
           filteredProducts?.map((data: any, index: number) => {
             Addition(data.filename, index);
-            // Onrate(data.author, data.filename);
-            // console.log(
-            //   data.filename,
-            //   AddedBook.filter((product: any) => product.book === data.filename)
-            // );
             return (
               <div
                 className="w-44 relative flex items-center flex-col group/item hover:bg-slate-100 ..."
@@ -264,20 +217,20 @@ function index() {
                   <span
                     className="group-hover/edit:text-gray-700 ..."
                     style={{ cursor: "pointer", color: "#fff" }}
-                    onClick={() => {
-                      if (data.chapter) {
-                        router.push(
-                          `/read?Book=${data.filename}&data=${
-                            (AddedBook &&
-                              AddedBook[InDex(data.filename)]?.inread) ||
-                            0
-                          }&index=${index}`
-                        );
-                        // dispatch(setChapter(data.filename));
-                      } else {
-                        alert("No Story Yet");
-                      }
-                    }}
+                    // onClick={() => {
+                    //   if (data.chapter) {
+                    //     router.push(
+                    //       `/read?Book=${data.filename}&data=${
+                    //         (AddedBook &&
+                    //           AddedBook[InDex(data.filename)]?.inread) ||
+                    //         0
+                    //       }&index=${index}`
+                    //     );
+                    //     // dispatch(setChapter(data.filename));
+                    //   } else {
+                    //     alert("No Story Yet");
+                    //   }
+                    // }}
                   >
                     {AddedBook &&
                     AddedBook[InDex(data.filename)]?.Done === true &&
@@ -305,4 +258,4 @@ function index() {
   );
 }
 
-export default index;
+export default Body;

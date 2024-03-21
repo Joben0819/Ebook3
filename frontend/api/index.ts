@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 // import React from "react";
 // import { setResponse } from "@/reducers/gameData";
 
-let local = 1;
+let local = 2;
 export const Domain =
   local === 1 ? "http://52.90.85.88:8080" : "http://127.0.0.1:8000";
 
@@ -79,15 +79,15 @@ export const api = async (
     }
 
     return response;
+    // } catch (error) {
+    //   if (window.location.origin + "/?code=401" !== window.location.href) {
+    //     window.location.href = "/?code=401";
+    //   }
+    //   console.log("error occured", window.location.href);
+    // }
   } catch (error) {
-    if (window.location.origin + "/?code=401" !== window.location.href) {
-      window.location.href = "/?code=401";
-    }
-    console.log("error occured", window.location.href);
+    return null;
   }
-  // } catch (error) {
-  //   return null;
-  // }
 };
 
 export function Registered(data: Login) {

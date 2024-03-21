@@ -7,25 +7,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { setModal } from "@/reducers/gameData";
 
 export default function Modal() {
-  const [data, setdata] = useState(1);
   const { Modal, Response } = useSelector((state: RootState) => state.gameData);
   const dispatch = useDispatch();
-  // useEffect(() => {
-  //   window.onload = function () {
-  //     if (Modal === 3) {
-  //       dispatch(setModal(1));
-  //     } else if (Response) {
-  //       dispatch(setModal(3));
-  //     }
-  //     // console.log("Page has finished loading!");
-  //   };
-  // }, [Modal]);
-  // console.log(Modal, data, "here");
   useEffect(() => {
-    if (window.location.origin + "/?code=401") {
-      dispatch(setModal(1));
-    } else {
+    if (Response) {
       dispatch(setModal(3));
+    } else {
+      dispatch(setModal(1));
     }
   }, [Response]);
 
