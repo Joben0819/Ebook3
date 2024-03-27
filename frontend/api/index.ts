@@ -15,6 +15,8 @@ import {
   Authors,
   Stories,
   Rate,
+  Read,
+  Unfavorite,
 } from "./type";
 import { useNavigate } from "react-router-dom";
 // import { useRouter } from "next/router";
@@ -53,8 +55,9 @@ export const api = async (
   const url = Domain + param;
   var globalHeaders = {
     "front-host": url,
-    id: Number(sessionStorage.getItem("id")),
-    token: sessionStorage.getItem("token"),
+    id: 0,
+    token:
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkiOiJzYW1wbGUxIn0.0U1rRh6oF1PG5GQt3_3QPGQ79lk607lXHjido90SlQM",
     "Content-Type": Content,
   };
   // try {
@@ -72,7 +75,7 @@ export const api = async (
   };
   try {
     const response: AxiosResponse = await axiosInstance(axiosConfig);
-    console.log(response.status, "api");
+    // console.log(response.status, "api");
     if (response.status != 200) {
       console.log("here");
       throw new Error("Request failed");
@@ -105,9 +108,10 @@ export function Books(data: Book) {
 export function UploadFile(data: Upload) {
   var formData = new FormData();
   formData.append("filename", data.filename);
-  formData.append("file", data.file ?? "");
+  // formData.append("file", data.file ?? "");
   formData.append("Author1", data.Author1);
   formData.append("Id", data.Id);
+  formData.append("_Id", data.Unique);
   return api("/UploadFile", Post, formData);
 }
 
@@ -155,6 +159,14 @@ export function Onrate(data: Rate) {
   return api("/Onrating", Post, data);
 }
 
+export function Reading(data: Read) {
+  return api("/Readers_file/", Post, data);
+}
+
 export function AccountInfo(data: {}) {
   return api("/AccountInfo/", Post, data);
+}
+
+export function Unfavorite(data: Unfavorite) {
+  return api("/add_Unfavorite/", Post, data);
 }

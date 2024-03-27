@@ -16,6 +16,6 @@ export default function Modal() {
       dispatch(setModal(1));
     }
   }, [Response]);
-
-  return <>{Modal === 1 ? <Login /> : Modal === 2 ? <Register /> : ""}</>;
+  const sample: number = 3;
+  return <>{sample === 1 ? <Login /> : Modal === 2 ? <Register /> : ""}</>;
 }

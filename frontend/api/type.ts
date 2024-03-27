@@ -10,7 +10,7 @@ export type Register = {
 
 export type Upload = {
   filename: string;
-  file: File | null;
+  Unique: string;
   Author1: string;
   Id: any;
 };
@@ -24,6 +24,7 @@ export type CreateFiled = {
   file_name: string;
   text_content: string;
   Book: string;
+  Unique: string;
 };
 
 export type AddedBook = {
@@ -63,10 +64,6 @@ export type OnRead = {
 
 export type OnWriter = {
   id: number;
-  Fullname: string;
-  Phonenumber: string;
-  username: string;
-  address: string;
 };
 
 export type Authors = {
@@ -78,6 +75,18 @@ export type Rate = {
   username: string;
   book: string;
   reader: number;
+};
+
+export type Read = {
+  id: number;
+  book: string;
+  idx: number;
+};
+
+export type Unfavorite = {
+  book: string;
+  id: number;
+  name: string;
 };
 
 export type OnDone = {

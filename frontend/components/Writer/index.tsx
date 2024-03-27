@@ -67,7 +67,7 @@ function Writer() {
     // console.log("Selected File:", selectedFile);
     UploadFile({
       filename: val1,
-      file: selectedFile,
+      Unique: "0",
       Author1: Response.name,
       Id: Number(Response.id),
     }).then((res) => {
@@ -103,6 +103,7 @@ function Writer() {
         file_name: chapter,
         Book: book?.filename,
         text_content: story?.value,
+        Unique: "",
       }).then((res) => {
         if (res.data.status === "Added") {
           setTimeout(() => {
