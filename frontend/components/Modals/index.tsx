@@ -4,10 +4,10 @@ import Login from "./Login/Login";
 import { RootState } from "@/store";
 import Register from "./Register";
 import { useDispatch, useSelector } from "react-redux";
-import { setModal, UserInform } from "@/reducers/gameData";
+import { setExit, setModal, UserInform } from "@/reducers/gameData";
 
 export default function Modal() {
-  const { Modal, Response, UserInfo } = useSelector(
+  const { Modal, Response, UserInfo, exit } = useSelector(
     (state: RootState) => state.gameData
   );
   const dispatch = useDispatch();
@@ -18,13 +18,27 @@ export default function Modal() {
     dispatch(UserInform({}));
     UserInfo;
     setTimeout(() => {
-      if (UserInfo.data.length === 0 && window.location.pathname === "/") {
+      if (UserInfo.data.length === 0) {
         dispatch(setModal(1));
       } else {
         dispatch(setModal(3));
       }
     }, 1000);
+  }, [Modal]);
+  useEffect(() => {
+    dispatch(setExit(true));
   }, []);
-  const sample: number = 3;
-  return <>{Modal === 1 ? <Login /> : Modal === 2 ? <Register /> : ""}</>;
+
+  console.log(exit, "exit");
+  return (
+    <>
+      {exit === true && window.location.pathname === "/" && Modal === 1 ? (
+        <Login />
+      ) : Modal === 2 ? (
+        <Register />
+      ) : (
+        ""
+      )}
+    </>
+  );
 }

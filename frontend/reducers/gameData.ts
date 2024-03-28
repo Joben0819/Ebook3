@@ -16,6 +16,7 @@ export interface GameDataState {
   Bookshelf: any;
   Author: Authors | "";
   UserInfo: any;
+  exit: boolean;
 }
 const initialState: GameDataState = {
   theme: "default",
@@ -30,6 +31,7 @@ const initialState: GameDataState = {
   Author: "",
   UserInfo: [],
   eventSignInPopup: {},
+  exit: false,
 };
 const gameDataSlice = createSlice({
   name: "gameData",
@@ -71,6 +73,9 @@ const gameDataSlice = createSlice({
     setBookshelf: (state, action) => {
       state.Bookshelf = action.payload;
     },
+    setExit: (state, action) => {
+      state.exit = action.payload;
+    },
   },
 });
 // ---- Getters ---- //
@@ -94,6 +99,7 @@ export const {
   setAuthor,
   setBookshelf,
   setUserInfo,
+  setExit,
 } = gameDataSlice.actions;
 export default gameDataSlice.reducer;
 

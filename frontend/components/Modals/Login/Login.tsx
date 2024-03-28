@@ -17,6 +17,7 @@ import {
   setResponse,
   AddBooked,
   Authoreds,
+  setExit,
 } from "@/reducers/gameData";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "@/api";
@@ -73,7 +74,7 @@ export default function Login() {
     >
       <Card className=" w-80 relative">
         <div
-          onClick={() => dispatch(setModal(3))}
+          onClick={() => dispatch(setExit(false))}
           className="absolute right-[13px] cursor-pointer"
         >
           x

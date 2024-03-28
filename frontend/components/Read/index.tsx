@@ -129,37 +129,36 @@ function Read() {
             Prev
           </Button>
           <Button
-          // variant={
-          //   Number(number) === FilteredBook[0]?.chapter?.length - 1
-          //     ? "secondary"
-          //     : "default"
-          // }
-          // onClick={() => {
-          //   if (Number(number) === FilteredBook[0].chapter?.length - 1) {
-          //     ("");
-          //   } else {
-          //     if (Response.length !== 0) {
-          //       Onread({
-          //         id: Response.id,
-          //         book: FilteredBook[0].filename,
-          //         image: FilteredBook[0].image,
-          //         name: Response.name,
-          //         idx: Number(dex),
-          //         inread: Number(number) + 1,
-          //         author: FilteredBook[0].author,
-          //       });
-          //       Onrate({
-          //         id: FilteredBook[0].id,
-          //         username: FilteredBook[0].author,
-          //         book: FilteredBook[0].filename,
-          //         reader: Response.id,
-          //       });
-          //     }
-          //     router.push(
-          //       `/read?Book=${params}&data=${Number(number) + 1}&index=${dex}`
-          //     );
-          //   }
-          // }}
+            variant={data.title === "No Chapter" ? "secondary" : "default"}
+            onClick={() => {
+              if (data.title !== "No Chapter") {
+                router.push(
+                  `/read?Chapter=${number + 1}&Book=${params}&id=${dex}`
+                );
+              }
+              // else {
+              // if (Response.length !== 0) {
+              //   Onread({
+              //     id: Response.id,
+              //     book: FilteredBook[0].filename,
+              //     image: FilteredBook[0].image,
+              //     name: Response.name,
+              //     idx: Number(dex),
+              //     inread: Number(number) + 1,
+              //     author: FilteredBook[0].author,
+              //   });
+              //   Onrate({
+              //     id: FilteredBook[0].id,
+              //     username: FilteredBook[0].author,
+              //     book: FilteredBook[0].filename,
+              //     reader: Response.id,
+              //   });
+              // }
+              // router.push(
+              //   `/read?Book=${params}&data=${Number(number) + 1}&index=${dex}`
+              // );
+              // }
+            }}
           >
             Next
           </Button>
