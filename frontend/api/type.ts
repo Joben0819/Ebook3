@@ -89,6 +89,12 @@ export type Unfavorite = {
   name: string;
 };
 
+export type Favorite = {
+  book: string;
+  id: number;
+  name: string;
+};
+
 export type OnDone = {
   id: number;
   book: string;

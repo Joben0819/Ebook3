@@ -10,6 +10,7 @@ import {
   Authored,
   AccountInfo,
   Unfavorite,
+  Favorite,
 } from "@/api";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,6 +21,7 @@ import {
   Authoreds,
   Book,
   setResponse,
+  UserInform,
 } from "@/reducers/gameData";
 import { RootState } from "@/store";
 import { Item } from "@radix-ui/react-dropdown-menu";
@@ -33,7 +35,7 @@ function Body() {
     reads: [],
   });
   const dispatch = useDispatch();
-  const { Response, AddedBook, Bookshelf, Author } = useSelector(
+  const { Response, AddedBook, Bookshelf, UserInfo } = useSelector(
     (state: RootState) => state.gameData
   );
   // const { data: activity_events = [], isLoading: isLoadingEvents } =
@@ -60,19 +62,24 @@ function Body() {
 
     //@ts-ignore
     dispatch(Book({}));
-    AccountInfo({}).then((res) => {
-      if (res?.data?.data?.length !== 0) {
-        setUser_data({
-          data: res.data.data,
-          readers: res.data.reads,
-        });
-      } else {
-        setUser_data({
-          data: [],
-          readers: [],
-        });
-      }
-    });
+    //@ts-ignore
+    dispatch(UserInform({}));
+
+    if (UserInfo?.data?.length === 0) {
+      sessionStorage.setItem("data", "false");
+      console.log("data", "false");
+      setUser_data({
+        data: [],
+        readers: [],
+      });
+    } else {
+      sessionStorage.setItem("data", "true");
+
+      setUser_data({
+        data: UserInfo?.data,
+        readers: UserInfo?.reads,
+      });
+    }
     return () => {
       if (inputElement) {
         inputElement.removeEventListener("keydown", handleKeyPress);
@@ -142,7 +149,7 @@ function Body() {
   //     return "";
   //   }
   // };
-  console.log(user_data.data, "user_data");
+  // console.log(UserInfo, user_data, "UserInfo");
   return (
     <div className="flex w-full items-center h-[90] flex-col gap-12">
       <div className="flex-col flex w-full items-center">
@@ -171,11 +178,9 @@ function Body() {
               <div
                 className="w-44 relative flex items-center flex-col group/item hover:bg-slate-100 ..."
                 key={index}
-                // onClick={() => {
-                //   router.push(
-                //     `/read?Chapter=0&id=${data.id}&Book=${data.filename}`
-                //   );
-                // }}
+                onClick={() => {
+                  window.location.href = `/read?Chapter=0&id=${data.id}&Book=${data.filename}`;
+                }}
               >
                 {user_data?.reader?.length !== 0
                   ? user_data?.readers?.Books?.map(
@@ -184,16 +189,7 @@ function Body() {
                           <div key={index}>
                             {ebook.book === data.filename &&
                             ebook.favorite === true ? (
-                              <div
-                                className="absolute right-[10px] z-[1] top-[0] rounded-[10px] bg-green-500 h-[20px] w-[20px]"
-                                onClick={() => {
-                                  Unfavorite({
-                                    book: data.filename,
-                                    id: data.id,
-                                    name: user_data.data.name,
-                                  });
-                                }}
-                              />
+                              <div className="absolute right-[10px] z-[1] top-[0] rounded-[10px] bg-green-500 h-[20px] w-[20px]" />
                             ) : (
                               ""
                             )}
@@ -202,11 +198,6 @@ function Body() {
                       }
                     )
                   : ""}
-                {/* {AddedBook && AddedBook[InDex(data.filename)]?.status === 1 ? (
-                  <div className="absolute right-[10px] z-[1] top-[0] rounded-[10px] bg-green-500 h-[20px] w-[20px]" />
-                ) : (
-                  ""
-                )} */}
                 <div className="relative w-11/12 relative h-48">
                   <Image
                     src={data.image ? data.image : Bookstore}
@@ -237,37 +228,52 @@ function Body() {
                   className="group/edit invisible absolute w-full flex-col h-full flex justify-center items-center group-hover/item:visible ..."
                   style={{ backgroundColor: "rgba(.5, .5, .5, .3)" }}
                 >
-                  {/* {AddedBook &&
-                  AddedBook[InDex(data.filename)]?.status === 1 ? (
-                    <span
-                      className="group-hover/edit:text-gray-700 ..."
-                      style={{
-                        cursor: "pointer",
-                        color: "blue",
-                      }}
-                      onClick={() => {
-                        Removed(data.filename, index);
-                      }}
-                    >
-                      Removed
-                    </span>
-                  ) : (
-                    <span
-                      className="group-hover/edit:text-gray-700 ..."
-                      style={{
-                        cursor: "pointer",
-                        color: "#fff",
-                      }}
-                      onClick={() => {
-                        if (Response.length !== 0) {
-                          Added(data.filename, data.image, index);
-                        } else {
+                  {user_data?.reader?.length !== 0
+                    ? user_data?.readers?.Books?.map(
+                        (ebook: any, index: number) => {
+                          return (
+                            <div key={index}>
+                              {ebook.book === data.filename &&
+                              ebook.favorite === true ? (
+                                <span
+                                  className="group-hover/edit:text-gray-700 ..."
+                                  style={{
+                                    cursor: "pointer",
+                                    color: "blue",
+                                  }}
+                                  onClick={() => {
+                                    Unfavorite({
+                                      book: data.filename,
+                                      id: data.id,
+                                      name: user_data.data.name,
+                                    });
+                                  }}
+                                >
+                                  Removed
+                                </span>
+                              ) : (
+                                <span
+                                  className="group-hover/edit:text-gray-700 ..."
+                                  style={{
+                                    cursor: "pointer",
+                                    color: "#fff",
+                                  }}
+                                  onClick={() => {
+                                    Favorite({
+                                      book: data.filename,
+                                      id: data.id,
+                                      name: user_data.data.name,
+                                    });
+                                  }}
+                                >
+                                  Favorite
+                                </span>
+                              )}
+                            </div>
+                          );
                         }
-                      }}
-                    >
-                      Favorite
-                    </span>
-                  )} */}
+                      )
+                    : ""}
                   <span
                     className="group-hover/edit:text-gray-700 ..."
                     style={{ cursor: "pointer", color: "#fff" }}

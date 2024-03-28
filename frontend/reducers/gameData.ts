@@ -1,6 +1,6 @@
 import { AnyAction, createSlice, ThunkAction } from "@reduxjs/toolkit";
 import { RootState } from "@/store";
-import { AddedBooks, Authored, Books } from "@/api";
+import { AccountInfo, AddedBooks, Authored, Books } from "@/api";
 import { Authors } from "@/api/type";
 
 export interface GameDataState {
@@ -15,6 +15,7 @@ export interface GameDataState {
   AddedBook: any;
   Bookshelf: any;
   Author: Authors | "";
+  UserInfo: any;
 }
 const initialState: GameDataState = {
   theme: "default",
@@ -27,7 +28,7 @@ const initialState: GameDataState = {
   AddedBook: [],
   Bookshelf: [],
   Author: "",
-
+  UserInfo: [],
   eventSignInPopup: {},
 };
 const gameDataSlice = createSlice({
@@ -64,6 +65,9 @@ const gameDataSlice = createSlice({
     setAuthor: (state, action) => {
       state.Author = action.payload;
     },
+    setUserInfo: (state, action) => {
+      state.UserInfo = action.payload;
+    },
     setBookshelf: (state, action) => {
       state.Bookshelf = action.payload;
     },
@@ -89,6 +93,7 @@ export const {
   setAddedBook,
   setAuthor,
   setBookshelf,
+  setUserInfo,
 } = gameDataSlice.actions;
 export default gameDataSlice.reducer;
 
@@ -121,6 +126,14 @@ export const Authoreds = (
   return (dispatch) => {
     Authored({ username: name }).then((res: any) => {
       dispatch(setAuthor(res?.data?.username));
+    });
+  };
+};
+
+export const UserInform = (): ThunkAction<void, RootState, null, AnyAction> => {
+  return (dispatch) => {
+    AccountInfo({}).then((res: any) => {
+      dispatch(setUserInfo(res?.data));
     });
   };
 };

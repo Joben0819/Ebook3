@@ -17,6 +17,7 @@ import {
   setAuthor,
 } from "@/reducers/gameData";
 import { useDispatch, useSelector } from "react-redux";
+import { Logout } from "@/api";
 
 function index(props: any) {
   const { Modal, Response, Navbar2 } = useSelector(
@@ -40,19 +41,25 @@ function index(props: any) {
   // console.log(Response, "Response");
   return (
     <div className="flex w-full justify-center gap-5 h-[10%] items-center">
-      {Response?.length !== 0 && (
+      {Modal === 3 && (
         <div
           className="w-20 flex items-center gap-2 cursor-pointer "
           onClick={() => {
-            sessionStorage.clear(),
-              dispatch(setModal(1)),
-              //@ts-ignore
-              dispatch(AddBooked("", (0).toString()));
-            dispatch(setChapter([]));
-            dispatch(setResponse([]));
-            dispatch(setAddedBook([]));
-            //@ts-ignore
-            dispatch(Authoreds(""));
+            // sessionStorage.clear();
+            Logout({}).then((res) => {
+              if (res.data.data) {
+                window.location.href = window.location.pathname;
+                dispatch(setModal(1));
+              }
+            });
+            //   dispatch(setModal(1)),
+            //   //@ts-ignore
+            //   dispatch(AddBooked("", (0).toString()));
+            // dispatch(setChapter([]));
+            // dispatch(setResponse([]));
+            // dispatch(setAddedBook([]));
+            // //@ts-ignore
+            // dispatch(Authoreds(""));
           }}
         >
           <div className="w-4 relative h-5">

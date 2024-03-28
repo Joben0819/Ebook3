@@ -17,6 +17,7 @@ import {
   Rate,
   Read,
   Unfavorite,
+  Favorite,
 } from "./type";
 import { useNavigate } from "react-router-dom";
 // import { useRouter } from "next/router";
@@ -55,9 +56,8 @@ export const api = async (
   const url = Domain + param;
   var globalHeaders = {
     "front-host": url,
-    id: 0,
-    token:
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkiOiJzYW1wbGUxIn0.0U1rRh6oF1PG5GQt3_3QPGQ79lk607lXHjido90SlQM",
+    id: Number(sessionStorage.getItem("id")),
+    token: sessionStorage.getItem("token"),
     "Content-Type": Content,
   };
   // try {
@@ -79,9 +79,35 @@ export const api = async (
     if (response.status != 200) {
       console.log("here");
       throw new Error("Request failed");
+    } else if (param === "/AccountInfo/") {
+      const parameter = sessionStorage.getItem("url-data");
+      const search1 = new URLSearchParams(window.location.search);
+      let url = new URL(window.location.href);
+      let search2 = new URLSearchParams(url.search);
+      search1.append("code", "401");
+      search2.delete("code");
+      const newUrl = `${window.location.href}?${search1.toString()}`;
+      url.search = search2.toString();
+      if (response.data.data.length === 0) {
+        if (!parameter) {
+          sessionStorage.setItem("url-data", window.location.href);
+          // window.history.replaceState({}, "", newUrl);
+          window.location.href = newUrl;
+        } else if (window.location.pathname !== "/") {
+          sessionStorage.removeItem("url-data");
+          return response;
+        }
+        return response;
+      } else {
+        sessionStorage.removeItem("url-data");
+        window.history.replaceState({}, "", url.toString());
+        // window.location.href = url.toString();
+        return response;
+      }
+    } else {
+      return response;
     }
 
-    return response;
     // } catch (error) {
     //   if (window.location.origin + "/?code=401" !== window.location.href) {
     //     window.location.href = "/?code=401";
@@ -169,4 +195,11 @@ export function AccountInfo(data: {}) {
 
 export function Unfavorite(data: Unfavorite) {
   return api("/add_Unfavorite/", Post, data);
+}
+
+export function Favorite(data: Favorite) {
+  return api("/add_favorite/", Post, data);
+}
+export function Logout(data: {}) {
+  return api("/logout", Post, data);
 }

@@ -47,12 +47,13 @@ export default function Login() {
             setstate(false);
             sessionStorage.setItem("token", res.data.token);
             sessionStorage.setItem("id", res.data.id);
-            dispatch(setModal(4)),
-              //@ts-ignore
-              dispatch(AddBooked(name, ids.toString()));
-            dispatch(setResponse(res.data));
-            // @ts-ignore
-            dispatch(Authoreds(name));
+            dispatch(setModal(4));
+            window.location.href = window.location.href;
+            //   //@ts-ignore
+            //   dispatch(AddBooked(name, ids.toString()));
+            // dispatch(setResponse(res.data));
+            // // @ts-ignore
+            // dispatch(Authoreds(name));
           }, 400);
         }
       } else {

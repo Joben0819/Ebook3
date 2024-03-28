@@ -90,19 +90,12 @@ function Read() {
     };
   }, [number]);
 
-  // console.log(
-  //   Bookshelf.filter((data: any) => data.filename === Chapter)[0]?.chapter[
-  //     number
-  //   ]?.title,
-
-  //   "here2"
-  // );
-  // const Href = sessionStorage.getItem("href");
-  console.log(params, dex, number);
   return (
     <>
       <Button
-        onClick={() => router.push(`/`)}
+        onClick={() => {
+          window.location.href = "/";
+        }}
         className="ml-[2rem] cursor-pointer"
         id="element"
       >

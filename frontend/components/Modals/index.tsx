@@ -4,18 +4,27 @@ import Login from "./Login/Login";
 import { RootState } from "@/store";
 import Register from "./Register";
 import { useDispatch, useSelector } from "react-redux";
-import { setModal } from "@/reducers/gameData";
+import { setModal, UserInform } from "@/reducers/gameData";
 
 export default function Modal() {
-  const { Modal, Response } = useSelector((state: RootState) => state.gameData);
+  const { Modal, Response, UserInfo } = useSelector(
+    (state: RootState) => state.gameData
+  );
   const dispatch = useDispatch();
+  const search1 = new URLSearchParams(window.location.search);
+  console.log(Modal <= 2, Modal, UserInfo.data.length === 0);
   useEffect(() => {
-    if (Response) {
-      dispatch(setModal(3));
-    } else {
-      dispatch(setModal(1));
-    }
-  }, [Response]);
+    //@ts-ignore
+    dispatch(UserInform({}));
+    UserInfo;
+    setTimeout(() => {
+      if (UserInfo.data.length === 0 && window.location.pathname === "/") {
+        dispatch(setModal(1));
+      } else {
+        dispatch(setModal(3));
+      }
+    }, 1000);
+  }, []);
   const sample: number = 3;
-  return <>{sample === 1 ? <Login /> : Modal === 2 ? <Register /> : ""}</>;
+  return <>{Modal === 1 ? <Login /> : Modal === 2 ? <Register /> : ""}</>;
 }
